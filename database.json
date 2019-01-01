@@ -1,0 +1,34 @@
+{
+    "main":{
+        "development":{
+            "client": "mongo",
+            "connection": {
+            "host"     : "127.0.0.1",
+            "user"     : "root",
+            "password" : "PassWord",
+            "database" : "vacas",
+            "charset"  : "utf8"
+            }
+        },
+        "docker":{
+            "client": "mongo",
+            "connection": {
+            "host"     : "database",
+            "user"     : "root",
+            "password" : "DockerPassWORD",
+            "database" : "vacas",
+            "charset"  : "utf8"
+            }
+        },
+        "production":{
+            "client": "mongo",
+            "connection": {
+            "host"     : "127.0.0.1",
+            "user"     : "",
+            "password" : "",
+            "database" : "vacas",
+            "charset"  : "utf8"
+            }
+        }
+    }
+}

@@ -1,0 +1,135 @@
+image: node:8-alpine
+# This are NOT jobs and it will be ignored by GitLab-CI
+.login_gitlab_registry: &login  # This is an anchor
+    docker login registry.gitlab.com -u ${GITLAB_REGISTRY_USER} -p ${GITLAB_REGISTRY_PASS}
+.install_dependencies: &install_dependencies
+    apk add --no-cache bash curl gawk sed util-linux pciutils usbutils coreutils binutils findutils grep
+.generate_env_file: &generate_env_file
+    cp environment/.prod.env .env
+.build_push_gitlab: &build_push
+  - ./scripts/generate_docker_image.sh registry.gitlab.com/intellidrone/api_new ${custom_tag} ${CI_COMMIT_SHA}
+  - docker push registry.gitlab.com/intellidrone/api_new:${custom_tag}
+
+cache:
+  paths:
+  - node_modules/
+  - .env
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  before_script:
+    - apk add --no-cache python make gcc g++
+  script:
+    #- npm install
+    - *generate_env_file
+
+test:
+  services:
+    - mongo:4.0
+  stage: test
+  script:
+    - echo test
+
+deploy-server:
+  stage: deploy
+  before_script:
+    # Install ssh-agent if not already installed, it is required by Docker.
+    # (change apt-get to yum if you use a CentOS-based image)
+    - 'which ssh-agent || ( apk add --update openssh )'
+
+    # Add bash
+    - apk add --update bash
+
+    # Add git
+    - apk add --update git
+
+    # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    #- echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+
+    # For Docker builds disable host key checking. Be aware that by adding that
+    # you are suspectible to man-in-the-middle attacks.
+    # WARNING: Use this only with the Docker executor, if you use it with shell
+    # you will overwrite your user's SSH config.
+    #- mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    # In order to properly check the server's host key, assuming you created the
+    # SSH_SERVER_HOSTKEYS variable previously, uncomment the following two lines
+    # instead.
+    # - mkdir -p ~/.ssh
+    # - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts'
+  script:
+  - npm i -g pm2
+  - pm2 deploy ecosystem.config.js production
+  when: on_success
+  only:
+    - master
+
+deploy-image-develop:
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
+    custom_tag: '${CI_COMMIT_REF_NAME}'
+  stage: deploy
+  dependencies:
+    - build
+  before_script:
+    - *login  # This is a reference to the anchor.
+    - apk add --update bash
+  script:
+    *build_push # This is a reference to the anchor.
+  when: on_success
+  only:
+    - develop
+
+deploy-image-master:
+  image: docker:latest
+  services:
+    - docker:dind
+  # Use the OverlayFS driver for improved performance.
+  variables:
+    DOCKER_DRIVER: overlay
+    custom_tag: 'latest'
+  stage: deploy
+  dependencies:
+    - build
+  before_script:
+    - *login  # This is a reference to the anchor.
+    - apk add --update bash
+  script:
+    *build_push # This is a reference to the anchor.
+  when: on_success
+  only:
+    - master
+
+deploy-image-tag:
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
+    custom_tag: '${CI_COMMIT_TAG}'
+  stage: deploy
+  dependencies:
+    - build
+  before_script:
+    - *login  # This is a reference to the anchor.
+    - apk add --update bash
+  script:
+    *build_push # This is a reference to the anchor.
+  when: on_success
+  only:
+    - tags

@@ -1,0 +1,41 @@
+{
+  "name": "intellidrone-api",
+  "version": "1.0.0",
+  "description": "This ios Intellidrone API designed by [Singleton](http://singleton.com.ar).You  can find out more about Swagger at [Singleton Web Page](http://singleton.com.ar) or on [Intellidrone Web Page](http://robotagro.com).",
+  "main": "src/server.js",
+  "scripts": {
+    "prestart": "npm install",
+    "postinstall": "",
+    "start": "node src/server.js -r dotenv/config"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "homepage": "https://gitlab.com/intelliDrone/api_new",
+  "license": "SEE LICENSE IN LICENSE file",
+  "bugs": {
+    "url": "https://gitlab.com/intelliDrone/api_new/issues",
+    "email": "patricio.perpetua.arg@gmail.com"
+  },
+  "author": {
+    "name": "Patricio Perpetua",
+    "email": "patricio.perpetua.arg@gmail.com",
+    "url": "http://patricioperpetua.singleton.com.ar"
+  },
+  "private": true,
+  "dependencies": {
+    "bcrypt": "3.0.3",
+    "bookshelf": "0.14.2",
+    "bookshelf-modelbase": "2.10.4",
+    "connect": "3.6.6",
+    "cors": "2.8.5",
+    "dotenv": "6.2.0",
+    "express-jwt": "5.3.1",
+    "js-yaml": "3.3.0",
+    "lodash": "4.17.11",
+    "mongoose": "5.4.1",
+    "normalize-port": "1.0.0",
+    "shelljs": "0.8.3",
+    "swagger-tools": "0.10.4"
+  }
+}

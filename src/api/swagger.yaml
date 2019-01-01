@@ -1,0 +1,2891 @@
+---
+swagger: "2.0"
+info:
+  description: "This ios Intellidrone API designed by [Singleton](http://singleton.com.ar).You\
+    \  can find out more about Swagger at [Singleton Web Page](http://singleton.com.ar)\
+    \ or on [Intellidrone Web Page](http://robotagro.com)."
+  version: "1.0.0"
+  title: "Intellidrone API"
+  termsOfService: "http://web.robotagro.com/api//terms"
+  contact:
+    name: "Equipo de Soporte"
+    url: "http://singleton.com.ar/soporte"
+    email: "soporte@singleton.com.ar"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "Lotes"
+  description: ""
+- name: "Vacas"
+  description: ""
+- name: "Actividad"
+  description: ""
+- name: "Users"
+  description: ""
+schemes:
+- "http"
+- "https"
+paths:
+  /Lotes:
+    get:
+      tags:
+      - "Lotes"
+      summary: "Get all lotes."
+      description: "Get all lotes."
+      operationId: "getLotes"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "skip"
+        in: "query"
+        description: "number of item to skip (not included the first)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        description: "max records to return (included the last)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "orderBy"
+        in: "query"
+        description: "order by property. Put '-' at the beginning to descendant order."
+        required: false
+        type: "string"
+      - name: "filter"
+        in: "query"
+        description: "filter data. NOT SUPPORTED YET."
+        required: false
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Lotes"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Lotes"
+    post:
+      tags:
+      - "Lotes"
+      summary: "Add one lote."
+      description: "Add one lote."
+      operationId: "addLote"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Lote"
+        required: true
+        schema:
+          $ref: "#/definitions/Lotes"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Lotes"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \ / resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Lotes"
+    put:
+      tags:
+      - "Lotes"
+      summary: "Edit one lote."
+      description: "Edit one lote."
+      operationId: "editLote"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Lote"
+        required: true
+        schema:
+          $ref: "#/definitions/Lotes"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Lotes"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Carriers"
+  /Lotes/{id}:
+    get:
+      tags:
+      - "Lotes"
+      summary: "Get one lote."
+      description: "Get one lote."
+      operationId: "getLoteById"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Lotes"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Lotes"
+    delete:
+      tags:
+      - "Lotes"
+      summary: "Delete one lote."
+      description: "Delete one lote."
+      operationId: "deleteLote"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/DeletedResponse"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Lotes"
+  /Vacas:
+    get:
+      tags:
+      - "Vacas"
+      summary: "Get all vacas."
+      description: "Get all vacas."
+      operationId: "getVacas"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "skip"
+        in: "query"
+        description: "number of item to skip (not included the first)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        description: "max records to return (included the last)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "orderBy"
+        in: "query"
+        description: "order by property. Put '-' at the beginning to descendant order."
+        required: false
+        type: "string"
+      - name: "filter"
+        in: "query"
+        description: "filter data. NOT SUPPORTED YET."
+        required: false
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Vacas"
+    post:
+      tags:
+      - "Vacas"
+      summary: "Add one vaca."
+      description: "Add one vaca."
+      operationId: "addVaca"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Vaca"
+        required: true
+        schema:
+          $ref: "#/definitions/Vacas"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \ / resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Vacas"
+    put:
+      tags:
+      - "Vacas"
+      summary: "Edit one vaca."
+      description: "Edit one vaca"
+      operationId: "editVaca"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Vaca"
+        required: true
+        schema:
+          $ref: "#/definitions/Vacas"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Vacas"
+  /Vacas/{id}:
+    get:
+      tags:
+      - "Vacas"
+      summary: "Get one vaca."
+      description: "Get one vaca."
+      operationId: "getVacasById"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Vacas"
+    delete:
+      tags:
+      - "Vacas"
+      summary: "Delete one vaca."
+      description: "Delete one vaca."
+      operationId: "deleteVaca"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/DeletedResponse"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Vacas"
+  /Actividades:
+    get:
+      tags:
+      - "Actividades"
+      summary: "Get all Actividades."
+      description: "Get all Actividades."
+      operationId: "getActividades"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "skip"
+        in: "query"
+        description: "number of item to skip (not included the first)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        description: "max records to return (included the last)"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "orderBy"
+        in: "query"
+        description: "order by property. Put '-' at the beginning to descendant order."
+        required: false
+        type: "string"
+      - name: "filter"
+        in: "query"
+        description: "filter data. NOT SUPPORTED YET."
+        required: false
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+    post:
+      tags:
+      - "Actividades"
+      summary: "Add one Actividad."
+      description: "Add one Actividad."
+      operationId: "addActividad"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Actividad"
+        required: true
+        schema:
+          $ref: "#/definitions/Actividades"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Vacas"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \ / resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+    put:
+      tags:
+      - "Actividades"
+      summary: "Edit one Actividad."
+      description: "Edit one Actividad"
+      operationId: "editActividad"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "Lote"
+        required: true
+        schema:
+          $ref: "#/definitions/Vacas"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Actividades"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+  /Actividades/{id}:
+    get:
+      tags:
+      - "Actividades"
+      summary: "Get one Actividad."
+      description: "Get one Actividades."
+      operationId: "getActividadById"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Actividades"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+    delete:
+      tags:
+      - "Actividades"
+      summary: "Delete one Actividad."
+      description: "Delete one Actividades."
+      operationId: "deleteActividad"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/DeletedResponse"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+  /Actividades/upload:
+    post:
+      tags:
+      - "Actividades"
+      summary: "Add actividades from a file."
+      description: "Add actividades from a file."
+      operationId: "addActividades"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "upfile"
+        in: "formData"
+        description: "The file to upload."
+        required: false
+        type: "file"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/UploadResponse"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \ / resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Actividades"
+  /Users:
+    get:
+      tags:
+      - "Users"
+      summary: "Get all Users."
+      description: "Get all Users."
+      operationId: "getUsers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "skip"
+        in: "query"
+        description: "number of item to skip"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        description: "max records to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "orderBy"
+        in: "query"
+        description: "order by property."
+        required: false
+        type: "string"
+      - name: "filter"
+        in: "query"
+        description: "filter data."
+        required: false
+        type: "string"
+      - name: "deleted"
+        in: "query"
+        description: "Get all, daleted, not deleted data. Default not deleted."
+        required: false
+        type: "string"
+        default: "NOT-DELETED"
+        enum:
+        - "NOT-DELETED"
+        - "DELETED"
+        - "ALL"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin, editor or viewer users."
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Users"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Users"
+    post:
+      tags:
+      - "Users"
+      summary: "Add one User."
+      description: "Add one User."
+      operationId: "addUser"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "User"
+        required: true
+        schema:
+          $ref: "#/definitions/Users"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Users"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Users"
+    put:
+      tags:
+      - "Users"
+      summary: "Edit one User."
+      description: "Edit one User."
+      operationId: "editUser"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "User"
+        required: true
+        schema:
+          $ref: "#/definitions/Users"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Users"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Users"
+  /Users/{id}:
+    get:
+      tags:
+      - "Users"
+      summary: "Get one User."
+      description: "Get one User."
+      operationId: "getUserById"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "deleted"
+        in: "query"
+        description: "Get all, daleted, not deleted data. Default not deleted."
+        required: false
+        type: "string"
+        default: "NOT-DELETED"
+        enum:
+        - "NOT-DELETED"
+        - "DELETED"
+        - "ALL"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Users"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Users"
+    delete:
+      tags:
+      - "Users"
+      summary: "Delete one Users."
+      description: "Delete one User."
+      operationId: "deleteUsers"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Request OK."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/DeletedResponse"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      - userToken: []
+      x-swagger-router-controller: "Users"
+  /Users/Login:
+    get:
+      tags:
+      - "Users"
+      summary: "Logs user into the system"
+      operationId: "login"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "user"
+        in: "query"
+        description: "username for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      security:
+      - appToken: []
+      x-swagger-router-controller: "Users"
+  /Users/Logout:
+    get:
+      tags:
+      - "Users"
+      summary: "Logs out current logged in user session"
+      operationId: "logout"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            type: "string"
+        204:
+          description: "Response is empty."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: "Some parameters are missing or badly entered."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "string"
+              format: "date-time"
+              description: "The UTC date/time at which the current rate limit window\
+                \  resets."
+          schema:
+            type: "string"
+        404:
+          description: "Entity not found."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Illegal input for operation."
+          headers:
+            X-Rate-Limit-Limit:
+              type: "integer"
+              description: "The number of allowed requests in the current period"
+            X-Rate-Limit-Remaining:
+              type: "integer"
+              description: "The number of remaining requests in the current period"
+            X-Rate-Limit-Reset:
+              type: "integer"
+              description: "The number of seconds left in the current period"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Users"
+securityDefinitions:
+  appToken:
+    type: "apiKey"
+    name: "x_app_id"
+    in: "header"
+  userToken:
+    type: "apiKey"
+    name: "x_user_key"
+    in: "header"
+definitions:
+  Lotes:
+    type: "object"
+    properties:
+      _id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      latitude:
+        type: "number"
+        format: "float"
+      longitude:
+        type: "number"
+        format: "float"
+    example:
+      latitude: 6.0274563
+      name: "Campo Baires"
+      id: 0
+      longitude: 1.4658129
+  Vacas:
+    type: "object"
+    properties:
+      _id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      sex:
+        type: "string"
+      months:
+        type: "integer"
+        format: "int64"
+      weight:
+        type: "number"
+        format: "float"
+      location:
+        $ref: "#/definitions/Lotes"
+      actividades:
+        type: "array"
+        items:
+          $ref: "#/definitions/Actividades"
+    example:
+      name: "Mirta"
+      weigth: 350
+      months: 30
+      location:
+        latitude: 6.0274563
+        name: "name"
+        id: 0
+        longitude: 1.4658129
+      id: 0
+  Actividades:
+    type: "object"
+    properties:
+      _id:
+        type: "integer"
+        format: "int64"
+      sampleDate:
+        type: "string"
+        format: "date-time"
+      latitude:
+        type: "number"
+        format: "float"
+      longitude:
+        type: "number"
+        format: "float"
+      vaca:
+        $ref: "#/definitions/Vacas"
+      insertDate:
+        type: "string"
+        format: "date-time"
+      colectionDate:
+        type: "string"
+        format: "date-time"
+      hdop:
+        type: "number"
+        format: "float"
+      satellites:
+        type: "integer"
+        format: "int64"
+      signal:
+        type: "number"
+        format: "float"
+      voltage:
+        type: "number"
+        format: "float"
+      tag:
+        type: "string"
+      connectionsAttempts:
+        type: "integer"
+        format: "int64"
+  Users:
+    type: "object"
+    properties:
+      _id:
+        type: "integer"
+        format: "int64"
+      user:
+        type: "string"
+      password:
+        type: "string"
+        format: "password"
+      lotes:
+        type: "array"
+        items:
+          $ref: "#/definitions/Lotes"
+      type:
+        type: "string"
+        enum:
+        - "COMMON"
+        - "SUPERVISOR"
+        - "ADMIN"
+    example:
+      _id: 0
+      type: "COMMON"
+      user: "user"
+      password: "Password"
+  UploadResponse:
+    type: "object"
+    properties:
+      actividades_insertadas:
+        type: "integer"
+        format: "int64"
+      nuevas_vacas:
+        type: "array"
+        items:
+          $ref: "#/definitions/Vacas"
+      lineas_con_error:
+        type: "array"
+        items:
+          $ref: "#/definitions/Linea"
+    example:
+      nuevas_vacas:
+      - weigth: 1.4658129
+        months: 6.02745618307040320615897144307382404804229736328125
+        name: "name"
+        location:
+          latitude: 6.0274563
+          name: "name"
+          id: 0
+          longitude: 1.4658129
+        _id: 0
+        actividades:
+        - date: "2000-01-23T04:56:07.000+00:00"
+          latitude: 5.962134
+          longitude: 5.637377
+        - date: "2000-01-23T04:56:07.000+00:00"
+          latitude: 5.962134
+          longitude: 5.637377
+      - weigth: 1.4658129
+        months: 6.02745618307040320615897144307382404804229736328125
+        name: "name"
+        location:
+          latitude: 6.0274563
+          name: "name"
+          id: 0
+          longitude: 1.4658129
+        _id: 0
+        actividades:
+        - date: "2000-01-23T04:56:07.000+00:00"
+          latitude: 5.962134
+          longitude: 5.637377
+        - date: "2000-01-23T04:56:07.000+00:00"
+          latitude: 5.962134
+          longitude: 5.637377
+      lineas_con_error:
+      - linea_number: 6
+        linea: "linea"
+      - linea_number: 6
+        linea: "linea"
+      actividades_insertadas: 0
+  Linea:
+    type: "object"
+    properties:
+      linea_number:
+        type: "integer"
+        format: "int64"
+      linea:
+        type: "string"
+    example:
+      linea_number: 6
+      linea: "linea"
+  Error:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      code:
+        type: "string"
+      message:
+        type: "string"
+      data:
+        type: "string"
+    example:
+      code: "code"
+      data: "data"
+      message: "message"
+  DeletedResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+    example:
+      id: 0
