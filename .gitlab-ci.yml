@@ -35,7 +35,7 @@ test:
   script:
     - echo test
 
-deploy-server:
+deploy-server-master:
   stage: deploy
   before_script:
     - 'which ssh-agent || ( apk add --update openssh )'
@@ -53,20 +53,20 @@ deploy-server:
     # WARNING: Use this only with the Docker executor, if you use it with shell
     # you will overwrite your user's SSH config.
     #- mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    #- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     # In order to properly check the server's host key, assuming you created the
     # SSH_SERVER_HOSTKEYS variable previously, uncomment the following two lines
     # instead.
     # - mkdir -p ~/.ssh
     # - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts'
   script:
-  - npm i -g pm2
-  - pm2 deploy ecosystem.config.js production
+    - npm i -g pm2
+    - pm2 deploy ecosystem.config.js production
   when: on_success
   only:
     - master
 
-deploy-server:
+deploy-server-develop:
   stage: deploy
   before_script:
     - 'which ssh-agent || ( apk add --update openssh )'
