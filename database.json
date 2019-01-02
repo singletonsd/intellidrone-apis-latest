@@ -20,13 +20,23 @@
             "charset"  : "utf8"
             }
         },
-        "production":{
+        "server-production":{
             "client": "mongo",
             "connection": {
             "host"     : "127.0.0.1",
             "user"     : "",
             "password" : "",
-            "database" : "vacas",
+            "database" : "vacas-new-production",
+            "charset"  : "utf8"
+            }
+        },
+        "server-development":{
+            "client": "mongo",
+            "connection": {
+            "host"     : "127.0.0.1",
+            "user"     : "",
+            "password" : "",
+            "database" : "vacas-new-development",
             "charset"  : "utf8"
             }
         }

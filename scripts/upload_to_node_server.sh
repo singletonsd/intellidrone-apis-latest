@@ -36,17 +36,17 @@ function usage(){
   echo -e "First Argument: server target. development or production"
   echo -e "Secound Argument: Gitlab User."
   echo -e "Third Argument: Gitlab Pass."
+  echo -e "Forth Argument: ssh key path (optional)."
 }
 
 TARGET_SERVER=
 BRANCH=
 USER=
 PASS=
-FOLDER_KEYS=keys
-FILE_PRIVATE_KEY="server.key"
+KEY_SSH="~/.ssh/robotagro"
 FILE_ORIGINAL="ecosystem.config.js"
 FILE_GENERATED="ecosystem.local.config.js"
-if [ $# -ne 3 ]; then
+if [ $# -lt 3 ]; then
   echo -e "Illegal number of parameters"
   echo -e "$(usage)"
   exit 1;
@@ -54,14 +54,17 @@ else
     TARGET_SERVER=${1}
     USER=${2}
     PASS=${3}
+    if [ $# -ge 4 ]; then
+      KEY_SSH=${4}
+    fi
 fi
 
 case "$TARGET_SERVER" in
     "development")
-        BRANCH=master
+        BRANCH=develop
         ;;
     "production")
-        BRANCH=develop
+        BRANCH=master
         ;;
     *)
         echo "Target server unknown (${TARGET_SERVER}). Valid options development or production"
@@ -69,26 +72,15 @@ case "$TARGET_SERVER" in
         ;;
 esac
 
-cd ${__root}
-
 if [ -f ${FILE_GENERATED}  ]; then
   rm ${FILE_GENERATED}
 fi
 
-# if [ ! -f ${FOLDER_KEYS}/${FILE_PRIVATE_KEY} ]; then
-#   echo "Cannot find private key inside folder keys. Name ${FILE_PRIVATE_KEY}"
-#   exit 1
-# fi
+sed -e "s/\${GITLAB_USER}/${USER}/" \
+    -e "s/\${GITLAB_PASS}/${PASS}/" \
+    -e "s/\${BRANCH}/${BRANCH}/" \
+    -e "s/\${TARGET_SERVER}/${TARGET_SERVER}/" \
+    -e "s+\${KEY_SSH}+${KEY_SSH}+" \
+  ${FILE_ORIGINAL} > ${FILE_GENERATED}
 
-# ssh-add ${FOLDER_KEYS}/${FILE_PRIVATE_KEY}
-
-# ssh-keyscan -H 'web.robotagro.com' >> ~/.ssh/known_hosts
-
-
-cp ${FILE_ORIGINAL} ${FILE_GENERATED}
-
-sed -e "s/\${GITLAB_USER}/${USER}/" -e "s/\${GITLAB_PASS}/${PASS}/" \
-  -e "s/\${BRANCH}/${BRANCH}/" -e "s/\${TARGET_SERVER}/${TARGET_SERVER}/" \
-  ${FILE_GENERATED}
-
-pm2 deploy ecosystem.local.config.js production --force
+pm2 deploy ecosystem.config.js production --force
