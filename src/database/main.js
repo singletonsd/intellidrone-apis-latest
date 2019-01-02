@@ -5,14 +5,20 @@ var database = JSON.parse(fs.readFileSync('./database.json', 'utf8'));
 
 var uri = 'mongodb://';
 uri = uri + database.main[process.env.DB_MAIN_CLIENT].connection.host+'/';
-uri= uri +database.main[process.env.DB_MAIN_CLIENT].connection.database;
+uri = uri +database.main[process.env.DB_MAIN_CLIENT].connection.database;
 
-mongoose.connect(uri,{
-  auth:{authdb:"admin"}
-  , user: database.main[process.env.DB_MAIN_CLIENT].connection.user
-  , pass: database.main[process.env.DB_MAIN_CLIENT].connection.password
-}).then(db => console.log('Base de datos corriendo'))
+if(database.main[process.env.DB_MAIN_CLIENT].connection.user){
+  mongoose.connect(uri,{
+    auth:{authdb:"admin"}
+    , user: database.main[process.env.DB_MAIN_CLIENT].connection.user
+    , pass: database.main[process.env.DB_MAIN_CLIENT].connection.password
+  }).then(db => console.log('Base de datos corriendo'))
+    .catch(err => console.error(err));
+}else{
+  mongoose.connect(uri).then(db => console.log('Base de datos corriendo'))
   .catch(err => console.error(err));
+}
+
 
 module.exports = mongoose;
 
