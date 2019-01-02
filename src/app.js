@@ -66,4 +66,9 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   }
 });
 
+process.on('uncaughtException', function(err) {
+  // handle the error safely
+  console.log(err)
+});
+
 module.exports = app;

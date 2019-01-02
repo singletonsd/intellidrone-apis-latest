@@ -69,8 +69,7 @@ module.exports.getUserById = function getUserById (req, res, next) {
     utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
     return;
   }
-  var deleted = req.swagger.params['deleted'].value;
-  Users.getUserById(id,deleted)
+  Users.getUserById(id)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -93,9 +92,7 @@ module.exports.getUsers = function getUsers (req, res, next) {
   let limit = req.swagger.params['limit'].value;
   let orderBy = req.swagger.params['orderBy'].value;
   let filter = req.swagger.params['filter'].value;
-  let deleted = req.swagger.params['deleted'].value;
-  let userId = req.swagger.params['userId'].value;
-  Users.getUsers(skip,limit,orderBy,filter,deleted,userId)
+  Users.getUsers(skip,limit,orderBy,filter)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);

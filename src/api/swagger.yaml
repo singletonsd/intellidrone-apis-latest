@@ -1902,22 +1902,6 @@ paths:
         description: "filter data."
         required: false
         type: "string"
-      - name: "deleted"
-        in: "query"
-        description: "Get all, daleted, not deleted data. Default not deleted."
-        required: false
-        type: "string"
-        default: "NOT-DELETED"
-        enum:
-        - "NOT-DELETED"
-        - "DELETED"
-        - "ALL"
-      - name: "userId"
-        in: "query"
-        description: "id of user. Only for admin, editor or viewer users."
-        required: false
-        type: "integer"
-        format: "int64"
       responses:
         200:
           description: "Request OK."
@@ -2249,16 +2233,6 @@ paths:
         required: true
         type: "integer"
         format: "int64"
-      - name: "deleted"
-        in: "query"
-        description: "Get all, daleted, not deleted data. Default not deleted."
-        required: false
-        type: "string"
-        default: "NOT-DELETED"
-        enum:
-        - "NOT-DELETED"
-        - "DELETED"
-        - "ALL"
       responses:
         200:
           description: "Request OK."
@@ -2783,6 +2757,8 @@ definitions:
         format: "int64"
       user:
         type: "string"
+      email:
+        type: "string"
       password:
         type: "string"
         format: "password"
@@ -2799,8 +2775,9 @@ definitions:
     example:
       _id: 0
       type: "COMMON"
-      user: "user"
-      password: "Password"
+      user: "carlitos"
+      email: robot@robotagro.com
+      password: "!Password@"
   UploadResponse:
     type: "object"
     properties:

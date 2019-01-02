@@ -12,16 +12,32 @@ const jwt = require('jsonwebtoken');
  * handedOvers Users
  * returns Users
  **/
-exports.addUser = async function (user) {
-  let salt = await bcrypt.genSalt(saltRounds);
-  let hash = await bcrypt.hash('superAdmin!!', salt);
-  const userDatabase = new userModel({
-    _id: user.id,
-    user: user.user,
+exports.addUser = async function (userData) {
+  let user = await userModel.findOne({ user: userData.user });
+  if(user)
+    throw { message: 'User already exists' };
+  if(userData.email){
+    user = await userModel.findOne({ email: userData.email });
+    if(user)
+      throw { message: 'Email already exists' };
+  }
+  user = await userModel.findOne({ _id: userData._id });
+  if(user)
+    throw { message: 'ID already exists' };
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hash = await bcrypt.hash(userData.password, salt);
+  let userDatabase = new userModel({
+    _id: userData._id,
+    user: userData.user,
     password: hash,
-    type: user.type
+    email: userData.email,
+    type: userData.type
   });
   await userDatabase.save();
+    userDatabase = userDatabase.toObject();
+    delete userDatabase['password'];
+    delete userDatabase['lotes'];
+    delete userDatabase['__v'];
   return userDatabase;
 }
 
@@ -33,18 +49,11 @@ exports.addUser = async function (user) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteUsers = function (id) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-      "id": 0
-    };
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.deleteUsers = async function (id) {
+  let user = await userModel.findByIdAndRemove(id);
+  if(!user)
+    throw { message: 'ID does not exists' };
+  return {id: id};
 }
 
 
@@ -93,33 +102,12 @@ exports.editUser = function (user) {
  * deleted String Get all, daleted, not deleted data. Default not deleted. (optional)
  * returns Users
  **/
-exports.getUserById = function (id, deleted) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-      "password": "password",
-      "lotes": [{
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }, {
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }],
-      "id": 0,
-      "type": "COMMON",
-      "user": "user",
-      "Password": "Password"
-    };
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getUserById = async function (id) {
+  let user = await userModel.findOne({ _id: id }).select('_id user email lotes');
+  if(!user)
+    throw { message: 'User does not exists with ID: ' + id };
+  user = user.toObject();
+  return user;
 }
 
 
@@ -135,50 +123,17 @@ exports.getUserById = function (id, deleted) {
  * userId Long id of user. Only for admin, editor or viewer users. (optional)
  * returns List
  **/
-exports.getUsers = function (skip, limit, orderBy, filter, deleted, userId) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [{
-      "password": "password",
-      "lotes": [{
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }, {
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }],
-      "id": 0,
-      "type": "COMMON",
-      "user": "user",
-      "Password": "Password"
-    }, {
-      "password": "password",
-      "lotes": [{
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }, {
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      }],
-      "id": 0,
-      "type": "COMMON",
-      "user": "user",
-      "Password": "Password"
-    }];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getUsers = async function (skip, limit, orderBy, filter) {
+  if(limit <= 0)
+    limit = 10;
+  let user;
+  if(orderBy)
+    user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit).sort(orderBy);
+  else
+    user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit);
+  if(!user)
+    throw { message: 'User does not exists with ID: ' + id };
+  return user;
 }
 
 
