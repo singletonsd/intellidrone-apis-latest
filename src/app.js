@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 var fs = require('fs'),
     path = require('path');
 
@@ -41,6 +43,9 @@ app.use(jwt({
 
 app.use(jwt_util.checkAppToken);
 
+if(process.env.SWAGGER_HOST){
+  swaggerDoc.host = process.env.SWAGGER_HOST;
+}
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
