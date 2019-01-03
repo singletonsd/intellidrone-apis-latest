@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
+
 require('dotenv').config();
 var fs = require('fs');
 var database = JSON.parse(fs.readFileSync('./database.json', 'utf8'));
@@ -15,13 +17,13 @@ if(database.main[process.env.DB_MAIN_CLIENT].connection.user){
   }).then(db => console.log('Base de datos corriendo'))
     .catch(err => console.error(err));
 }else{
-  mongoose.connect(uri).then(db => console.log('Base de datos corriendo'))
+  mongoose.connect(uri).then(connection => {
+    console.log('Base de datos corriendo');
+  })
   .catch(err => console.error(err));
 }
 
-
 module.exports = mongoose;
-
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const userModel = require('./models/users');

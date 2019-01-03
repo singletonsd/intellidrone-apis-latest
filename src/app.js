@@ -44,7 +44,6 @@ const PUBLIC_URLs = [
   pathToRegexp(SWAGGER_BASE_PATH + 'api-docs')
 ];
 
-console.log({PUBLIC_URLs});
 var jwt = require("express-jwt");
 app.use(jwt({
   secret: jwt_util.publicKey,
