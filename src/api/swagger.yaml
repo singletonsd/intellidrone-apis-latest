@@ -6,7 +6,7 @@ info:
     \ or on [Intellidrone Web Page](http://robotagro.com)."
   version: "1.0.0"
   title: "Intellidrone API"
-  termsOfService: "http://web.robotagro.com/api//terms"
+  termsOfService: "http://web.robotagro.com/api/terms"
   contact:
     name: "Equipo de Soporte"
     url: "http://singleton.com.ar/soporte"
@@ -21,7 +21,7 @@ tags:
   description: ""
 - name: "Vacas"
   description: ""
-- name: "Actividad"
+- name: "Actividades"
   description: ""
 - name: "Users"
   description: ""

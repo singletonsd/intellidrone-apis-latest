@@ -9,14 +9,16 @@ module.exports = {
     env: {
       NODE_ENV: 'development',
       PORT: 3001,
-      DB_MAIN_CLIENT: 'server-production',
-      SWAGGER_HOST:'http://web.robotagro.com/api/development'
+      DB_MAIN_CLIENT: 'server-development',
+      SWAGGER_HOST:'web.robotagro.com',
+      SWAGGER_BASE_PATH: '/api/development/'
     },
     env_production: {
       NODE_ENV: 'production',
       PORT: 3002,
-      DB_MAIN_CLIENT:'server-development',
-      SWAGGER_HOST:'http://web.robotagro.com/api/latest'
+      DB_MAIN_CLIENT:'server-production',
+      SWAGGER_HOST:'http://web.robotagro.com',
+      SWAGGER_BASE_PATH: '/api/latest/'
     }
   }],
   deploy : {

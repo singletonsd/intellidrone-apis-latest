@@ -35,6 +35,7 @@
     "lodash": "4.17.11",
     "mongoose": "5.4.1",
     "normalize-port": "1.0.0",
+    "path-to-regexp": "2.4.0",
     "shelljs": "0.8.3",
     "swagger-tools": "0.10.4"
   }
