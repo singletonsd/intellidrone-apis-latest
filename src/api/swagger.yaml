@@ -69,8 +69,7 @@ paths:
         in: "query"
         description: "id of user. Only for admin users."
         required: false
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -381,7 +380,7 @@ paths:
       security:
       - appToken: []
       - userToken: []
-      x-swagger-router-controller: "Carriers"
+      x-swagger-router-controller: "Lotes"
   /Lotes/{id}:
     get:
       tags:
@@ -400,8 +399,12 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -510,8 +513,7 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -643,8 +645,7 @@ paths:
         in: "query"
         description: "id of user. Only for admin users."
         required: false
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -974,8 +975,12 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1084,8 +1089,7 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1217,8 +1221,7 @@ paths:
         in: "query"
         description: "id of user. Only for admin users."
         required: false
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1548,8 +1551,12 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
+      - name: "userId"
+        in: "query"
+        description: "id of user. Only for admin users."
+        required: false
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1658,8 +1665,7 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1773,8 +1779,7 @@ paths:
         in: "query"
         description: "id of user. Only for admin users."
         required: false
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -2231,8 +2236,7 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -2341,8 +2345,7 @@ paths:
         in: "path"
         description: "id to delete"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -2662,8 +2665,7 @@ definitions:
     type: "object"
     properties:
       _id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       name:
         type: "string"
       latitude:
@@ -2673,25 +2675,26 @@ definitions:
         type: "number"
         format: "float"
       owner_id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       owner:
         $ref: "#/definitions/Users"
     example:
       latitude: 6.0274563
       name: "Campo Baires"
-      id: 0
       longitude: 1.4658129
+      owner_id: "5c2e3ccd96b609336e650fe5"
   Vacas:
     type: "object"
     properties:
       _id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       name:
         type: "string"
       sex:
         type: "string"
+        enum:
+        - "Hembra"
+        - "Macho"
       months:
         type: "integer"
         format: "int64"
@@ -2699,8 +2702,7 @@ definitions:
         type: "number"
         format: "float"
       location_id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       location:
         $ref: "#/definitions/Lotes"
       actividades:
@@ -2714,15 +2716,13 @@ definitions:
       location:
         latitude: 6.0274563
         name: "name"
-        id: 0
+        id: '5c2e3ccd96b609336e650fe5'
         longitude: 1.4658129
-      id: 0
   Actividades:
     type: "object"
     properties:
       _id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       sampleDate:
         type: "string"
         format: "date-time"
@@ -2733,8 +2733,7 @@ definitions:
         type: "number"
         format: "float"
       vaca_id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       vaca:
         $ref: "#/definitions/Vacas"
       insertDate:
@@ -2764,8 +2763,7 @@ definitions:
     type: "object"
     properties:
       _id:
-        type: "integer"
-        format: "int64"
+        type: "string"
       user:
         type: "string"
       email:
@@ -2784,7 +2782,6 @@ definitions:
         - "SUPERVISOR"
         - "ADMIN"
     example:
-      _id: 0
       type: "COMMON"
       user: "carlitos"
       email: robot@robotagro.com
@@ -2808,12 +2805,6 @@ definitions:
       - weigth: 1.4658129
         months: 6.02745618307040320615897144307382404804229736328125
         name: "name"
-        location:
-          latitude: 6.0274563
-          name: "name"
-          id: 0
-          longitude: 1.4658129
-        _id: 0
         actividades:
         - date: "2000-01-23T04:56:07.000+00:00"
           latitude: 5.962134
@@ -2838,8 +2829,6 @@ definitions:
           latitude: 5.962134
           longitude: 5.637377
       lineas_con_error:
-      - linea_number: 6
-        linea: "linea"
       - linea_number: 6
         linea: "linea"
       actividades_insertadas: 0

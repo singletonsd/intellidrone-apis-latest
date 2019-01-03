@@ -38,6 +38,7 @@ exports.addUser = async function (userData) {
     delete userDatabase['password'];
     delete userDatabase['lotes'];
     delete userDatabase['__v'];
+    delete userDatabase['updated'];
   return userDatabase;
 }
 
@@ -131,8 +132,6 @@ exports.getUsers = async function (skip, limit, orderBy, filter) {
     user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit).sort(orderBy);
   else
     user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit);
-  if(!user)
-    throw { message: 'User does not exists with ID: ' + id };
   return user;
 }
 

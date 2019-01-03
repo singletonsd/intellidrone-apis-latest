@@ -1,27 +1,25 @@
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
 
 require('dotenv').config();
 var fs = require('fs');
 var database = JSON.parse(fs.readFileSync('./database.json', 'utf8'));
 
 var uri = 'mongodb://';
-uri = uri + database.main[process.env.DB_MAIN_CLIENT].connection.host+'/';
-uri = uri +database.main[process.env.DB_MAIN_CLIENT].connection.database;
+uri = uri + database.main[process.env.DB_MAIN_CLIENT].connection.host;//+'/';
+// uri = uri +database.main[process.env.DB_MAIN_CLIENT].connection.database;
+var mongo_options = {
+  dbName: database.main[process.env.DB_MAIN_CLIENT].connection.database,
+  useNewUrlParser: true,
+  auth:{authdb:"root"}
+};
+if(database.main[process.env.DB_MAIN_CLIENT].connection.user)
+  mongo_options.user = database.main[process.env.DB_MAIN_CLIENT].connection.user;
+if(database.main[process.env.DB_MAIN_CLIENT].connection.user)
+  mongo_options.pass = database.main[process.env.DB_MAIN_CLIENT].connection.password;
 
-if(database.main[process.env.DB_MAIN_CLIENT].connection.user){
-  mongoose.connect(uri,{
-    auth:{authdb:"admin"}
-    , user: database.main[process.env.DB_MAIN_CLIENT].connection.user
-    , pass: database.main[process.env.DB_MAIN_CLIENT].connection.password
-  }).then(db => console.log('Base de datos corriendo'))
-    .catch(err => console.error(err));
-}else{
-  mongoose.connect(uri).then(connection => {
-    console.log('Base de datos corriendo');
-  })
+mongoose.connect(uri,mongo_options)
+  .then(db => console.log('Base de datos corriendo'))
   .catch(err => console.error(err));
-}
 
 module.exports = mongoose;
 const bcrypt = require('bcrypt');
@@ -35,8 +33,8 @@ userModel.find({user:'admin'},function (err, user){
       bcrypt.hash('superAdmin!!', salt, function(err, hash) {
           // Store hash in your password DB.
         const userDatabase = new userModel({
-          _id:1,
           user:'admin',
+          email: 'soporte@singleton.com.ar',
           password:hash,
           type: 'ADMIN'
         });

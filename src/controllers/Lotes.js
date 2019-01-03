@@ -65,7 +65,11 @@ module.exports.editLote = function editLote (req, res, next) {
 
 module.exports.getLoteById = function getLoteById (req, res, next) {
   let id = req.swagger.params['id'].value;
-  Lotes.getLoteById(id)
+  let userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
+  Lotes.getLoteById(id,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -85,6 +89,9 @@ module.exports.getLotes = function getLotes (req, res, next) {
   let orderBy = req.swagger.params['orderBy'].value;
   let filter = req.swagger.params['filter'].value;
   let userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
   Lotes.getLotes(skip,limit,orderBy,filter,userId)
     .then(function (response) {
       if(response)

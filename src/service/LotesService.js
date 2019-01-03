@@ -18,7 +18,7 @@ exports.addLote = async function(lote) {
   }
   let user = await userModel.findOne({ _id: lote.owner_id });
   if(!user)
-    throw { message: 'Owner ID does not exist (${lote.owner_id}).'};
+    throw { message: 'Owner ID does not exist (' + lote.owner_id +').'};
   let loteDatabase = new loteModel({
     name: lote.name,
     latitude: lote.latitude,
@@ -27,7 +27,11 @@ exports.addLote = async function(lote) {
   });
   await loteDatabase.save();
   loteDatabase = loteDatabase.toObject();
-  delete loteDatabase['__v'];
+  let savedLote = await loteModel.findOne({_id: loteDatabase._id }).populate({path: 'owner', select: 'user'});
+
+  savedLote = savedLote.toObject();
+  delete savedLote['__v'];
+  return savedLote;
 }
 
 
@@ -38,18 +42,11 @@ exports.addLote = async function(lote) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteLote = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "id" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.deleteLote = async function(id) {
+  let lote = await loteModel.findByIdAndRemove(id);
+  if(!lote)
+    throw { message: 'ID does not exists' + id };
+  return {id: id};
 }
 
 
@@ -57,24 +54,31 @@ exports.deleteLote = function(id) {
  * Edit one lote.
  * Edit one lote.
  *
- * lote Lotes 
+ * lote Lotes
  * returns Lotes
  **/
-exports.editLote = function(lote) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "latitude" : 6.0274563,
-  "name" : "name",
-  "id" : 0,
-  "longitude" : 1.4658129
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+exports.editLote = async function(lote) {
+  if(!lote.owner_id){
+    if(lote.owner && lote.owner._id)
+      lote.owner_id = lote.owner._id;
+    else
+      throw { message: 'Owner ID missing.'};
+  }
+  let user = await userModel.findOne({ _id: lote.owner_id });
+  if(!user)
+    throw { message: 'Owner ID does not exist (' + lote.owner_id +').'};
+  let loteDatabase = new loteModel({
+    _id : lote._id,
+    name: lote.name,
+    latitude: lote.latitude,
+    longitude: lote.longitude,
+    owner: lote.owner_id
   });
+  await loteModel.findOneAndUpdate({ _id: lote._id },loteDatabase);
+  let savedLote = await loteModel.findOne({_id: lote._id }).populate({path: 'owner', select: 'user'});
+  savedLote = savedLote.toObject();
+  delete savedLote['__v'];
+  return savedLote;
 }
 
 
@@ -85,21 +89,16 @@ exports.editLote = function(lote) {
  * id Long id to delete
  * returns Lotes
  **/
-exports.getLoteById = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "latitude" : 6.0274563,
-  "name" : "name",
-  "id" : 0,
-  "longitude" : 1.4658129
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getLoteById = async function(id,userId) {
+  let options = { _id: id };
+  if(userId)
+    options.owner = userId;
+  let lote = await loteModel.findOne(options)
+    .populate({path: 'owner', select: 'user'});
+  if(!lote)
+    throw { message: 'Lote does not exists with ID: ' + id };
+    lote = lote.toObject();
+  return lote;
 }
 
 
@@ -114,25 +113,24 @@ exports.getLoteById = function(id) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getLotes = function(skip,limit,orderBy,filter,userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "latitude" : 6.0274563,
-  "name" : "name",
-  "id" : 0,
-  "longitude" : 1.4658129
-}, {
-  "latitude" : 6.0274563,
-  "name" : "name",
-  "id" : 0,
-  "longitude" : 1.4658129
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getLotes = async function(skip,limit,orderBy,filter,userId) {
+  if(limit <= 0)
+    limit = 10;
+  let lote;
+  let find = {};
+  let populate = {path: 'owner', select: 'user'};
+  if(userId)
+    find = {owner_id: userId};
+  if(orderBy)
+    lote = await loteModel.find(find)
+      .populate(populate)
+      .skip(skip).limit(limit).sort(orderBy);
+  else
+    lote = await loteModel.find({owner: userId})
+    .populate(populate)
+    .skip(skip).limit(limit);
+  if(!lote)
+    throw { message: 'User does not exists with ID: ' + id };
+  return lote;
 }
 

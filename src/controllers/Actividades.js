@@ -82,7 +82,11 @@ module.exports.editActividad = function editActividad (req, res, next) {
 
 module.exports.getActividadById = function getActividadById (req, res, next) {
   let id = req.swagger.params['id'].value;
-  Actividades.getActividadById(id)
+  let userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
+  Actividades.getActividadById(id,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -102,6 +106,9 @@ module.exports.getActividades = function getActividades (req, res, next) {
   let orderBy = req.swagger.params['orderBy'].value;
   let filter = req.swagger.params['filter'].value;
   let userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
   Actividades.getActividades(skip,limit,orderBy,filter,userId)
     .then(function (response) {
       if(response)

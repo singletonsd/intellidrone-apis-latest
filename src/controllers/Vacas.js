@@ -57,6 +57,9 @@ module.exports.getVacas = function getVacas (req, res, next) {
   var orderBy = req.swagger.params['orderBy'].value;
   var filter = req.swagger.params['filter'].value;
   var userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
   Vacas.getVacas(skip,limit,orderBy,filter,userId)
     .then(function (response) {
       if(response)
@@ -73,7 +76,11 @@ module.exports.getVacas = function getVacas (req, res, next) {
 
 module.exports.getVacasById = function getVacasById (req, res, next) {
   var id = req.swagger.params['id'].value;
-  Vacas.getVacasById(id)
+  let userId = req.swagger.params['userId'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+  }
+  Vacas.getVacasById(id,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);

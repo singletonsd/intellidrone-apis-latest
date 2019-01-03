@@ -1,21 +1,13 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
-const autoIncrement = require('mongoose-auto-increment');
+const Schema = mongoose.Schema;
 
 const lotesSchema = new Schema({
-    _id: { type:String,required:true },
-    name: { type:String },
-    latitude:{type:Number},
-    longitude:{type:Number},
-    owner:{type:String,ref:'Users'}
+    _id: {type: Schema.Types.ObjectId, auto: true},
+    name: { type:String, required: true },
+    latitude:{ type:Number },
+    longitude:{ type:Number },
+    owner:{ type: Schema.Types.ObjectId, ref:'Users' },
+    updated: { type: Date, default: Date.now }
 });
 
-var lotesModel = mongoose.model('Lotes',lotesSchema);
-autoIncrement.initialize(mongoose.connection);
-lotesSchema.plugin(autoIncrement.plugin, {
-    model: 'Lotes',
-    field: '_id',
-    startAt: 1,
-    incrementBy: 1
-});
-module.exports = lotesModel;
+module.exports = mongoose.model('Lotes',lotesSchema);

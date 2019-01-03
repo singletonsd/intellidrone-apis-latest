@@ -1,43 +1,39 @@
 'use strict';
 
+const vacaModel = require('../database/models/vacas');
+const loteModel = require('../database/models/lotes');
 
 /**
  * Add one vaca.
  * Add one vaca.
  *
- * vaca Vacas 
+ * vaca Vacas
  * returns Vacas
  **/
-exports.addVaca = function(vaca) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+exports.addVaca = async function(vaca) {
+  if(!vaca.location_id){
+    if(vaca.location && vaca.location._id)
+      vaca.location_id = vaca.location._id;
+    else
+      throw { message: 'Location ID missing.'};
+  }
+  let lote = await loteModel.findOne({ _id: vaca.location_id });
+  if(!lote)
+    throw { message: 'Location ID does not exist (' + vaca.location_id +').'};
+  let vacaDatabase = new vacaModel({
+    name: vaca.name,
+    location: vaca.location_id,
+    sex: vaca.sex,
+    months: vaca.months,
+    weight: vaca.weight
   });
+  await vacaDatabase.save();
+  vacaDatabase = vacaDatabase.toObject();
+  let savedVaca = await vacaModel.findOne({_id: vacaDatabase._id }).populate({path: 'location', select: 'name'});
+
+  savedVaca = savedVaca.toObject();
+  delete savedVaca['__v'];
+  return savedVaca;
 }
 
 
@@ -48,82 +44,47 @@ exports.addVaca = function(vaca) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteVaca = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "id" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.deleteVaca = async function(id) {
+  let vaca = await vacaModel.findByIdAndRemove(id);
+  if(!vaca)
+    throw { message: 'ID does not exists' + id };
+  return {id: id};
 }
 
 
-/**
- * Edit one Actividad.
- * Edit one Actividad
- *
- * lote Vacas 
- * returns Actividades
- **/
-exports.editActividad = function(lote) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "date" : "2000-01-23T04:56:07.000+00:00",
-  "latitude" : 5.962134,
-  "longitude" : 5.637377
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+
 
 
 /**
  * Edit one vaca.
  * Edit one vaca
  *
- * lote Vacas 
+ * lote Vacas
  * returns Vacas
  **/
-exports.editVaca = function(lote) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+exports.editVaca = async function(vaca) {
+  if(!vaca.location_id){
+    if(vaca.location && vaca.location._id)
+      vaca.location_id = vaca.location._id;
+    else
+      throw { message: 'Location ID missing.'};
+  }
+  let lote = await loteModel.findOne({ _id: vaca.location_id });
+  if(!lote)
+    throw { message: 'Lote ID does not exist (' + vaca.location_id +').'};
+  let vacaDatabase = new vacaModel({
+    _id : vaca._id,
+    name: vaca.name,
+    location: vaca.location_id,
+    sex: vaca.sex,
+    months: vaca.months,
+    weight: vaca.weight
   });
+  await vacaModel.findOneAndUpdate({ _id: vaca._id },vacaDatabase);
+  let savedVaca = await vacaModel.findOne({_id: vaca._id }).populate({path: 'location', select: 'name'});
+  savedVaca = savedVaca.toObject();
+  delete savedVaca['__v'];
+  return savedVaca;
 }
 
 
@@ -138,56 +99,25 @@ exports.editVaca = function(lote) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getVacas = function(skip,limit,orderBy,filter,userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-}, {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getVacas = async function(skip,limit,orderBy,filter,userId) {
+  if(limit <= 0)
+    limit = 10;
+  let vaca;
+  let find = {};
+  let populate = {path: 'location', select: 'name'};
+  if(userId)
+    find = {owner_id: userId};
+  if(orderBy)
+    vaca = await vacaModel.find(find)
+      .populate(populate)
+      .skip(skip).limit(limit).sort(orderBy);
+  else
+    vaca = await vacaModel.find({owner: userId})
+    .populate(populate)
+    .skip(skip).limit(limit);
+  if(!vaca)
+    throw { message: 'User does not exists with ID: ' + id };
+  return vaca;
 }
 
 
@@ -198,35 +128,15 @@ exports.getVacas = function(skip,limit,orderBy,filter,userId) {
  * id Long id to delete
  * returns Vacas
  **/
-exports.getVacasById = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getVacasById = async function(id,userId) {
+  let options = { _id: id };
+  if(userId)
+    options.owner = userId;
+  let vaca = await vacaModel.findOne(options)
+    .populate({path: 'location', select: 'name'});
+  if(!vaca)
+    throw { message: 'Vaca does not exists with ID: ' + id };
+    vaca = vaca.toObject();
+  return vaca;
 }
 

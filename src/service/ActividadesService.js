@@ -135,13 +135,37 @@ exports.deleteActividad = function(id) {
 
 
 /**
+ * Edit one Actividad.
+ * Edit one Actividad
+ *
+ * lote Vacas
+ * returns Actividades
+ **/
+exports.editActividad = function(lote) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = {
+  "date" : "2000-01-23T04:56:07.000+00:00",
+  "latitude" : 5.962134,
+  "longitude" : 5.637377
+};
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
  * Get one Actividad.
  * Get one Actividades.
  *
  * id Long id to delete
  * returns Actividades
  **/
-exports.getActividadById = function(id) {
+exports.getActividadById = function(id,userId) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
