@@ -10,12 +10,10 @@ uri = uri + database.main[process.env.DB_MAIN_CLIENT].connection.host;//+'/';
 var mongo_options = {
   dbName: database.main[process.env.DB_MAIN_CLIENT].connection.database,
   useNewUrlParser: true,
-  auth:{authdb:"root"}
+  user: database.main[process.env.DB_MAIN_CLIENT].connection.user,
+  pass: database.main[process.env.DB_MAIN_CLIENT].connection.password
+  //,auth:{authdb:"admin"}
 };
-if(database.main[process.env.DB_MAIN_CLIENT].connection.user)
-  mongo_options.user = database.main[process.env.DB_MAIN_CLIENT].connection.user;
-if(database.main[process.env.DB_MAIN_CLIENT].connection.user)
-  mongo_options.pass = database.main[process.env.DB_MAIN_CLIENT].connection.password;
 
 mongoose.connect(uri,mongo_options)
   .then(db => console.log('Base de datos corriendo'))

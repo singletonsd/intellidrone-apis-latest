@@ -1,7 +1,7 @@
 {
   "name": "intellidrone-api",
   "version": "1.0.0",
-  "description": "This ios Intellidrone API designed by [Singleton](http://singleton.com.ar).You  can find out more about Swagger at [Singleton Web Page](http://singleton.com.ar) or on [Intellidrone Web Page](http://robotagro.com).",
+  "description": "This Intellidrone API Server designed by [Singleton](http://singleton.com.ar).You  can find out more about Swagger at [Singleton Web Page](http://singleton.com.ar) or on [Intellidrone Web Page](http://robotagro.com).",
   "main": "src/server.js",
   "scripts": {
     "prestart": "npm install",
@@ -21,6 +21,10 @@
     "name": "Patricio Perpetua",
     "email": "patricio.perpetua.arg@gmail.com",
     "url": "http://patricioperpetua.singleton.com.ar"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/intelliDrone/api_new.git"
   },
   "private": true,
   "dependencies": {

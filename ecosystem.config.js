@@ -38,7 +38,7 @@ module.exports = {
       user : 'root',
       host : '66.97.36.28',
       port: "5822",
-      ref  : 'origin/master',
+      ref  : 'origin/develop',
       repo : 'https://gitlab+deploy-token-35600:2nG-heAbGzEPMYBpxHhM@gitlab.com/intelliDrone/api_new.git',
       path : '/root/NodeApps/api-new-develop',
       ssh_options : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
