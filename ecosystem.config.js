@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 module.exports = {
   apps : [{
     name: 'API-new-' + process.env.environment,
