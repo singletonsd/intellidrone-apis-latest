@@ -120,13 +120,13 @@ exports.getLotes = async function(skip,limit,orderBy,filter,userId) {
   let find = {};
   let populate = {path: 'owner', select: 'user'};
   if(userId)
-    find = {owner_id: userId};
+    find = {owner: userId};
   if(orderBy)
     lote = await loteModel.find(find)
       .populate(populate)
       .skip(skip).limit(limit).sort(orderBy);
   else
-    lote = await loteModel.find({owner: userId})
+    lote = await loteModel.find(find)
     .populate(populate)
     .skip(skip).limit(limit);
   if(!lote)

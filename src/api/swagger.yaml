@@ -2716,11 +2716,9 @@ definitions:
       reference: "0xFF23"
       weigth: 350
       months: 30
+      sex: "Hembra"
       location:
-        latitude: 6.0274563
-        name: "name"
-        id: '5c2e3ccd96b609336e650fe5'
-        longitude: 1.4658129
+        _id: '5c2e3ccd96b609336e650fe5'
   Actividades:
     type: "object"
     properties:

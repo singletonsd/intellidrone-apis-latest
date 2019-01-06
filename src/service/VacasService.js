@@ -19,11 +19,19 @@ exports.addVaca = async function(vaca) {
   }
   let lote = await loteModel.findOne({ _id: vaca.location_id });
   if(!lote)
-    throw { message: 'Location ID does not exist (' + vaca.location_id +').'};
+    throw { message: 'Location ID does not exist (' + lote.location_id +').'};
+  if(vaca.reference){
+    let vacaRef = await vacaModel.findOne({ reference: vaca.reference });
+    if(vacaRef)
+      throw { message: 'Reference already exists' };
+  }else{
+    throw { message: 'Reference missing.'};
+  }
   let vacaDatabase = new vacaModel({
     name: vaca.name,
     location: vaca.location_id,
     sex: vaca.sex,
+    reference: vaca.reference,
     months: vaca.months,
     weight: vaca.weight
   });
@@ -76,6 +84,7 @@ exports.editVaca = async function(vaca) {
     _id : vaca._id,
     name: vaca.name,
     location: vaca.location_id,
+    reference: vaca.reference,
     sex: vaca.sex,
     months: vaca.months,
     weight: vaca.weight
@@ -104,15 +113,17 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId) {
     limit = 10;
   let vaca;
   let find = {};
-  let populate = {path: 'location', select: 'name'};
+  let populate = {path: 'location', select: 'name, owner',populate: { path: 'owner', select: 'user' }};
+  let populate2 = {path: 'actividades', select: 'sampleDate, latitude, longitude', limit: 10};
   if(userId)
-    find = {owner_id: userId};
+    find = {'location.owner': userId};
   if(orderBy)
     vaca = await vacaModel.find(find)
       .populate(populate)
+      .populate(populate2)
       .skip(skip).limit(limit).sort(orderBy);
   else
-    vaca = await vacaModel.find({owner: userId})
+    vaca = await vacaModel.find(find)
     .populate(populate)
     .skip(skip).limit(limit);
   if(!vaca)

@@ -61,7 +61,7 @@ deploy-server-master:
     # - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts'
   script:
     - npm i -g pm2
-    - pm2 deploy ecosystem.config.js production
+    - pm2 deploy ecosystem.config.js production --node-args="--env=production"
   when: on_success
   only:
     - master
@@ -92,7 +92,7 @@ deploy-server-develop:
     # - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts'
   script:
   - npm i -g pm2
-  - pm2 deploy ecosystem.config.js development
+  - pm2 deploy ecosystem.config.js development --node-args="--env=development"
   when: on_success
   only:
     - develop

@@ -1,8 +1,6 @@
-require("dotenv").config();
-
 module.exports = {
   apps : [{
-    name: 'API-new-' + process.env.environment,
+    name: 'API-new-' + process.argv.env,
     script: 'src/server.js',
     instances: 1,
     autorestart: true,

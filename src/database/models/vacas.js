@@ -5,10 +5,11 @@ const VacasSchema = new Schema({
     _id: { type: Schema.Types.ObjectId, auto: true },
     name: { type: String },
     sex: { type: String, enum: ['Hembra', 'Macho'], },
+    reference: { type: String, required: true, unique: true},
     months: { type: Number },
     weight: { type: Number },
     actividades: [{ type: mongoose.Schema.ObjectId, ref: 'Actividades' }],
-    location: { type: String, ref: 'Users' },
+    location: { type: mongoose.Schema.ObjectId, ref: 'Lotes' },
     updated: { type: Date, default: Date.now }
 });
 
