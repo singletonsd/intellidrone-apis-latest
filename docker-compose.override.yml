@@ -2,22 +2,20 @@ version: "3.3"
 
 services:
   api:
+    build:
+      context: .
+    image: registry.gitlab.com/intellidrone/api_new:${API_VERSION:-latest}
     environment:
       SWAGGER_HOST: ${SWAGGER_HOST:-http://localhost:${PORT}}
       SWAGGER_BASE_PATH: ${SWAGGER_BASE_PATH:-/api/}
-    networks:
-      - db
-    depends_on:
-      - mongo
+      DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
+    ports:
+      - "3000:${PORT:-3000}"
+    volumes:
+      - ./:/usr/src/app
   mongo:
     image: mongo:4.0
-    ports:
-      - "27017:${PORT_MONGO:-27017}"
     volumes:
       - ./data:/data/db
     networks:
       - db
-
-networks:
-  db:
-    driver: overlay

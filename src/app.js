@@ -79,15 +79,15 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     swaggerUi: SWAGGER_BASE_PATH + 'docs'
   }));
 
-  //Allow cross origin
-  app.use(cors());
-
   if(process.env.DATABASE_LOCAL){
     console.log("Running with local database.");
     var shell = require('shelljs');
     shell.exec('./scripts/run_mongo_local.sh');
   }
 });
+
+//Allow cross origin
+app.use(cors(require('./utils/cors-util').corsOptions));
 
 process.on('uncaughtException', function(err) {
   // handle the error safely

@@ -193,7 +193,7 @@ exports.getActividadById = function(id,userId) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getActividades = function(skip,limit,orderBy,filter,userId) {
+exports.getActividades = function(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = [ {

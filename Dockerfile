@@ -11,7 +11,7 @@ LABEL mainteiner="Patricio Perpetua <patricio.perpetua.arg@gmail.com>" \
 
 RUN apk add --no-cache \
     python \
-    make gcc g++ 
+    make gcc g++
 
 ENV PYTHON /usr/bin/python
 

@@ -108,7 +108,7 @@ exports.editVaca = async function(vaca) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getVacas = async function(skip,limit,orderBy,filter,userId) {
+exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
   if(limit <= 0)
     limit = 10;
   let vaca;
@@ -117,6 +117,8 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId) {
   let populate2 = {path: 'actividades', select: 'sampleDate, latitude, longitude', limit: 10};
   if(userId)
     find = {'location.owner': userId};
+  if(loteId)
+    find = {'location': loteId};
   if(orderBy)
     vaca = await vacaModel.find(find)
       .populate(populate)

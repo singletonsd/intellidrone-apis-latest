@@ -646,6 +646,11 @@ paths:
         description: "id of user. Only for admin users."
         required: false
         type: "string"
+      - name: "loteId"
+        in: "query"
+        description: "id of lote."
+        required: false
+        type: "string"
       responses:
         200:
           description: "Request OK."
@@ -1222,6 +1227,28 @@ paths:
         description: "id of user. Only for admin users."
         required: false
         type: "string"
+      - name: "loteId"
+        in: "query"
+        description: "id of lote."
+        required: false
+        type: "string"
+      - name: "vacaId"
+        in: "query"
+        description: "id of vaca."
+        required: false
+        type: "string"
+      - name: "fromDate"
+        in: "query"
+        description: "Date from (included)"
+        required: false
+        type: "string"
+        format: "date-time"
+      - name: "untilDate"
+        in: "query"
+        description: "Date until (included)"
+        required: false
+        type: "string"
+        format: "date-time"
       responses:
         200:
           description: "Request OK."

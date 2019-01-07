@@ -106,10 +106,14 @@ module.exports.getActividades = function getActividades (req, res, next) {
   let orderBy = req.swagger.params['orderBy'].value;
   let filter = req.swagger.params['filter'].value;
   let userId = req.swagger.params['userId'].value;
+  let loteId = req.swagger.params['loteId'].value;
+  let vacaId = req.swagger.params['vacaId'].value;
+  let fromDate = req.swagger.params['fromDate'].value;
+  let untilDate = req.swagger.params['untilDate'].value;
   if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
     userId = req.user.data._id;
   }
-  Actividades.getActividades(skip,limit,orderBy,filter,userId)
+  Actividades.getActividades(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
