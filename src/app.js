@@ -6,7 +6,6 @@ var fs = require('fs'),
     path = require('path');
 
 var app = require('connect')();
-var cors = require('cors');
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 
@@ -25,7 +24,7 @@ var options = {
 var spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
 
-const jwt_util = require("./utils/jwt-util");
+
 
 if(process.env.SWAGGER_HOST){
   swaggerDoc.host = process.env.SWAGGER_HOST;
@@ -37,29 +36,11 @@ if(process.env.SWAGGER_BASE_PATH){
   swaggerDoc.basePath = process.env.SWAGGER_BASE_PATH;
 }
 
-const PUBLIC_URLs = [
-  pathToRegexp(SWAGGER_BASE_PATH + 'Users/Login'),
-  pathToRegexp([SWAGGER_BASE_PATH + 'docs', SWAGGER_BASE_PATH + 'docs/:option']),
-  // pathToRegexp(SWAGGER_BASE_PATH + 'docs/*'),
-  pathToRegexp(SWAGGER_BASE_PATH + 'api-docs')
-];
+//Allow cross origin
+require('./utils/cors-util')(app);
 
-var jwt = require("express-jwt");
-app.use(jwt({
-  secret: jwt_util.publicKey,
-  // credentialsRequired: false,
-  getToken: function fromHeaderOrQuerystring (req) {
-    var token = req.headers.x_user_key;
-    if (token){
-      if(token.split(' ')[0] === 'Bearer')
-        return token.split(' ')[1];
-      return token;
-    }
-    return null;
-  }
-}).unless({path: PUBLIC_URLs}));
-
-app.use(jwt_util.checkAppToken);
+//Enable JWT tokens
+require("./utils/jwt-util").addJWT(app,SWAGGER_BASE_PATH);
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
@@ -85,10 +66,6 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     shell.exec('./scripts/run_mongo_local.sh');
   }
 });
-
-//Allow cross origin
-// app.use(cors(require('./utils/cors-util').corsOptions));
-app.use(cors());
 
 process.on('uncaughtException', function(err) {
   // handle the error safely

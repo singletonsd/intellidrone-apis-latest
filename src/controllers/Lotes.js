@@ -94,7 +94,7 @@ module.exports.getLotes = function getLotes (req, res, next) {
   }
   Lotes.getLotes(skip,limit,orderBy,filter,userId)
     .then(function (response) {
-      if(response)
+      if(response && response.length)
         utils.writeJson(res, response);
       else
         utils.writeJson(res,utils.respondWithCode(204));

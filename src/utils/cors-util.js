@@ -1,22 +1,21 @@
 const pathToRegexp = require('path-to-regexp');
 const _ = require('lodash');
+const cors = require('cors');
 
-var whitelist = [pathToRegexp('http://localhost:port*'), pathToRegexp('http://web.robotagro.com')];
+const whitelist = [pathToRegexp('http://localhost:port*'), pathToRegexp('http://web.robotagro.com')];
+module.exports = function(app){
+  app.use(cors(corsOptions));
+};
 
-module.exports.corsOptions = {
-    origin: function (origin, callback) {
-      let finalToken = 0;
-      _.forEach(whitelist || [], (reg) => {
-        finalToken++;
-        if(reg.exec(origin)){
-          finalToken--;
-          return false;
-        }
-      });
-      if(finalToken === whitelist.length){
-        callback(new Error('Not allowed by CORS'));
-      }else{
-        callback(null, true);
-      }
-    }
-  }
+const corsOptions = {
+  origin: whitelist
+  ,credentials: true
+  ,methods: ['GET','HEAD','OPTIONS','POST','PUT']
+  ,allowedHeaders: ['Access-Control-Allow-Headers'
+    , 'Origin,Accept'
+    , 'X-Requested-With'
+    , 'Content-Type'
+    , 'Access-Control-Request-Method'
+    , 'Access-Control-Request-Headers'
+    ,'x_app_id','x_user_key']
+};

@@ -94,7 +94,7 @@ module.exports.getUsers = function getUsers (req, res, next) {
   let filter = req.swagger.params['filter'].value;
   Users.getUsers(skip,limit,orderBy,filter)
     .then(function (response) {
-      if(response)
+      if(response && response.length)
         utils.writeJson(res, response);
       else
         utils.writeJson(res,utils.respondWithCode(204));

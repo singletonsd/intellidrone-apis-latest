@@ -63,7 +63,7 @@ module.exports.getVacas = function getVacas (req, res, next) {
   }
   Vacas.getVacas(skip,limit,orderBy,filter,userId,loteId)
     .then(function (response) {
-      if(response)
+      if(response && response.length)
         utils.writeJson(res, response);
       else
         utils.writeJson(res,utils.respondWithCode(204));

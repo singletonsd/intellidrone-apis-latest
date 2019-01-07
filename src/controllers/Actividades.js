@@ -115,7 +115,7 @@ module.exports.getActividades = function getActividades (req, res, next) {
   }
   Actividades.getActividades(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate)
     .then(function (response) {
-      if(response)
+      if(response && response.length)
         utils.writeJson(res, response);
       else
         utils.writeJson(res,utils.respondWithCode(204));
