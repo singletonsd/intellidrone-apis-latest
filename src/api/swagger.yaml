@@ -2501,7 +2501,12 @@ paths:
               type: "integer"
               description: "The number of seconds left in the current period"
           schema:
-            $ref: "#/definitions/Error"
+            type: object
+            properties:
+              user:
+                $ref: "#/definitions/Users"
+              token:
+                type: "string"
         204:
           description: "Response is empty."
           headers:
@@ -2810,6 +2815,7 @@ definitions:
         - "SUPERVISOR"
         - "ADMIN"
     example:
+      _id: asdsa555saddesa123123
       type: "COMMON"
       user: "carlitos"
       email: robot@robotagro.com

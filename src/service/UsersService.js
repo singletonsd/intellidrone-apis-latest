@@ -125,13 +125,14 @@ exports.getUserById = async function (id) {
  * returns List
  **/
 exports.getUsers = async function (skip, limit, orderBy, filter) {
+  let populate = {path: 'lotes', select: '_id name latitude longitude'};
   if(limit <= 0)
     limit = 10;
   let user;
   if(orderBy)
-    user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit).sort(orderBy);
+    user = await userModel.find().select('_id user email lotes').populate(populate).skip(skip).limit(limit).sort(orderBy);
   else
-    user = await userModel.find().select('_id user email lotes').skip(skip).limit(limit);
+    user = await userModel.find().select('_id user email lotes').populate(populate).skip(skip).limit(limit);
   return user;
 }
 

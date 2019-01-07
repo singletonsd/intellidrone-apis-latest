@@ -87,7 +87,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 });
 
 //Allow cross origin
-app.use(cors(require('./utils/cors-util').corsOptions));
+// app.use(cors(require('./utils/cors-util').corsOptions));
+app.use(cors());
 
 process.on('uncaughtException', function(err) {
   // handle the error safely
