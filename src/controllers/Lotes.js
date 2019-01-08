@@ -4,11 +4,14 @@ var utils = require('../utils/writer.js');
 var Lotes = require('../service/LotesService');
 
 module.exports.addLote = function addLote (req, res, next) {
-  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
-    utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
-    return;
-  }
   let lote = req.swagger.params['Lote'].value;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    lote.owner_id = req.user.data._id;
+    /*if(lote.owner_id !== req.user.data._id){
+      utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+      return;
+    }*/
+  }
   Lotes.addLote(lote)
     .then(function (response) {
       if(response)
@@ -24,12 +27,14 @@ module.exports.addLote = function addLote (req, res, next) {
 };
 
 module.exports.deleteLote = function deleteLote (req, res, next) {
+  let userId;
   if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
-    utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
-    return;
+    userId = req.user.data._id;
+    //utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+    //return;
   }
   let id = req.swagger.params['id'].value;
-  Lotes.deleteLote(id)
+  Lotes.deleteLote(id,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -44,12 +49,15 @@ module.exports.deleteLote = function deleteLote (req, res, next) {
 };
 
 module.exports.editLote = function editLote (req, res, next) {
-  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
-    utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
-    return;
-  }
+  let userId;
   let lote = req.swagger.params['Lote'].value;
-  Lotes.editLote(lote)
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+    lote.owner_id = req.user.data._id;
+    //utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+    //return;
+  }
+  Lotes.editLote(lote,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);

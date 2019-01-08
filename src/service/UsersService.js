@@ -21,13 +21,9 @@ exports.addUser = async function (userData) {
     if(user)
       throw { message: 'Email already exists' };
   }
-  user = await userModel.findOne({ _id: userData._id });
-  if(user)
-    throw { message: 'ID already exists' };
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(userData.password, salt);
   let userDatabase = new userModel({
-    _id: userData._id,
     user: userData.user,
     password: hash,
     email: userData.email,

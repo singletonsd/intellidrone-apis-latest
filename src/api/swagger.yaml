@@ -2711,6 +2711,7 @@ definitions:
       owner:
         $ref: "#/definitions/Users"
     example:
+      _id: "5c34ec9c354a1f1ce536b27b"
       latitude: 6.0274563
       name: "Campo Baires"
       longitude: 1.4658129

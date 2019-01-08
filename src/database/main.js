@@ -20,9 +20,12 @@ mongoose.connect(uri,mongo_options)
   .catch(err => console.error(err));
 
 module.exports = mongoose;
+const userModel = require('./models/users');
+require('./models/lotes');
+require('./models/vacas');
+require('./models/actividades');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const userModel = require('./models/users');
 userModel.find({user:'admin'},function (err, user){
   if (err)
       throw err;

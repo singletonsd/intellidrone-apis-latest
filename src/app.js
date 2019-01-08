@@ -9,11 +9,6 @@ var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 
-const pathToRegexp = require('path-to-regexp');
-
-//Connect to mongodb
-const mongoose = require('./database/main');
-
 // swaggerRouter configuration
 var options = {
   controllers: path.join(__dirname, './controllers'),
@@ -23,8 +18,6 @@ var options = {
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 var spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
-
-
 
 if(process.env.SWAGGER_HOST){
   swaggerDoc.host = process.env.SWAGGER_HOST;
@@ -41,6 +34,14 @@ require('./utils/cors-util')(app);
 
 //Enable JWT tokens
 require("./utils/jwt-util").addJWT(app,SWAGGER_BASE_PATH);
+
+//Connect to mongodb
+const mongoose = require('./database/main');
+if(process.env.DATABASE_LOCAL){
+  console.log("Running with local database.");
+  var shell = require('shelljs');
+  shell.exec('./scripts/run_mongo_local.sh');
+}
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
@@ -59,12 +60,6 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     apiDocs: SWAGGER_BASE_PATH + 'api-docs',
     swaggerUi: SWAGGER_BASE_PATH + 'docs'
   }));
-
-  if(process.env.DATABASE_LOCAL){
-    console.log("Running with local database.");
-    var shell = require('shelljs');
-    shell.exec('./scripts/run_mongo_local.sh');
-  }
 });
 
 process.on('uncaughtException', function(err) {

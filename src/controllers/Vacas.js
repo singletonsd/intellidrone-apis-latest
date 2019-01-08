@@ -4,8 +4,16 @@ var utils = require('../utils/writer.js');
 var Vacas = require('../service/VacasService');
 
 module.exports.addVaca = function addVaca (req, res, next) {
+  let userId;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+    /*if(lote.owner_id !== req.user.data._id){
+      utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+      return;
+    }*/
+  }
   var vaca = req.swagger.params['Vaca'].value;
-  Vacas.addVaca(vaca)
+  Vacas.addVaca(vaca,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -20,8 +28,16 @@ module.exports.addVaca = function addVaca (req, res, next) {
 };
 
 module.exports.deleteVaca = function deleteVaca (req, res, next) {
+  let userId;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+    /*if(lote.owner_id !== req.user.data._id){
+      utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+      return;
+    }*/
+  }
   var id = req.swagger.params['id'].value;
-  Vacas.deleteVaca(id)
+  Vacas.deleteVaca(id,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);
@@ -36,8 +52,16 @@ module.exports.deleteVaca = function deleteVaca (req, res, next) {
 };
 
 module.exports.editVaca = function editVaca (req, res, next) {
+  let userId;
+  if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
+    userId = req.user.data._id;
+    /*if(lote.owner_id !== req.user.data._id){
+      utils.writeJson(res, new utils.respondWithCode(401,'Not having the privilege.'));
+      return;
+    }*/
+  }
   var vaca = req.swagger.params['Vaca'].value;
-  Vacas.editVaca(vaca)
+  Vacas.editVaca(vaca,userId)
     .then(function (response) {
       if(response)
         utils.writeJson(res, response);

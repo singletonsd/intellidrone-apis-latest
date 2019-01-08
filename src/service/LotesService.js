@@ -42,8 +42,14 @@ exports.addLote = async function(lote) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteLote = async function(id) {
-  let lote = await loteModel.findByIdAndRemove(id);
+exports.deleteLote = async function(id,userId) {
+  let findOption = { _id: id};
+  if(userId)
+    findOption.owner = userId;
+  let lote = await loteModel.findOne(findOption);
+  if(!lote)
+    throw { message: 'Lote does not belong to this user or ID does not exists (' + id +').'};
+  lote = await loteModel.findByIdAndRemove(id);
   if(!lote)
     throw { message: 'ID does not exists' + id };
   return {id: id};
@@ -57,7 +63,15 @@ exports.deleteLote = async function(id) {
  * lote Lotes
  * returns Lotes
  **/
-exports.editLote = async function(lote) {
+exports.editLote = async function(lote,userId) {
+  if(!lote._id){
+    throw { message: '_id missing.'};
+  }
+  if(userId){
+    let lotecheck = await loteModel.findOne({ _id: lote._id, owner: userId });
+    if(!lotecheck)
+      throw { message: 'Lote does not belong to this user or ID does not exists (' + lote._id +').'};
+  }
   if(!lote.owner_id){
     if(lote.owner && lote.owner._id)
       lote.owner_id = lote.owner._id;

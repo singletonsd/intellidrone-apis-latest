@@ -3,6 +3,8 @@
 const vacaModel = require('../database/models/vacas');
 const loteModel = require('../database/models/lotes');
 
+const populate = {path: 'location', select: 'name owner',populate: { path: 'owner', select: '_id user' }};
+const populate2 = {path: 'actividades', select: 'sampleDate, latitude, longitude', limit: 10};
 /**
  * Add one vaca.
  * Add one vaca.
@@ -10,16 +12,20 @@ const loteModel = require('../database/models/lotes');
  * vaca Vacas
  * returns Vacas
  **/
-exports.addVaca = async function(vaca) {
+exports.addVaca = async function(vaca,userId) {
   if(!vaca.location_id){
     if(vaca.location && vaca.location._id)
       vaca.location_id = vaca.location._id;
     else
       throw { message: 'Location ID missing.'};
   }
-  let lote = await loteModel.findOne({ _id: vaca.location_id });
+  let optionsLote = { _id: vaca.location_id };
+  if(userId){
+    optionsLote.owner = userId;
+  }
+  let lote = await loteModel.findOne(optionsLote);
   if(!lote)
-    throw { message: 'Location ID does not exist (' + lote.location_id +').'};
+    throw { message: 'Location ID does not exist (' + vaca.location_id +') or does not belongs to this user.'};
   if(vaca.reference){
     let vacaRef = await vacaModel.findOne({ reference: vaca.reference });
     if(vacaRef)
@@ -38,7 +44,6 @@ exports.addVaca = async function(vaca) {
   await vacaDatabase.save();
   vacaDatabase = vacaDatabase.toObject();
   let savedVaca = await vacaModel.findOne({_id: vacaDatabase._id }).populate({path: 'location', select: 'name'});
-
   savedVaca = savedVaca.toObject();
   delete savedVaca['__v'];
   return savedVaca;
@@ -52,8 +57,14 @@ exports.addVaca = async function(vaca) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteVaca = async function(id) {
-  let vaca = await vacaModel.findByIdAndRemove(id);
+exports.deleteVaca = async function(id,userId) {
+  let options = { _id: id };
+  let vaca = await vacaModel.findOne(options).populate(populate);
+  if(!vaca)
+    throw { message: 'Vaca does not exists with ID: ' + id };
+  if(userId && vaca.location.owner.id !== userId)
+    throw { message: 'Vaca does not belong to user: ' + userId };
+  vaca = await vacaModel.findByIdAndRemove(id);
   if(!vaca)
     throw { message: 'ID does not exists' + id };
   return {id: id};
@@ -70,16 +81,29 @@ exports.deleteVaca = async function(id) {
  * lote Vacas
  * returns Vacas
  **/
-exports.editVaca = async function(vaca) {
+exports.editVaca = async function(vaca,userId) {
+  if(!vaca._id){
+    throw { message: '_id missing.'};
+  }
   if(!vaca.location_id){
     if(vaca.location && vaca.location._id)
       vaca.location_id = vaca.location._id;
     else
       throw { message: 'Location ID missing.'};
   }
-  let lote = await loteModel.findOne({ _id: vaca.location_id });
+  let optionsLote = { _id: vaca.location_id };
+  if(userId)
+    optionsLote.owner = userId;
+  let lote = await loteModel.findOne(optionsLote);
   if(!lote)
-    throw { message: 'Lote ID does not exist (' + vaca.location_id +').'};
+    throw { message: 'Lote ID does not exist or does not belongs to user (' + vaca.location_id +').'};
+  if(userId){
+    let vacacheck = await vacaModel.findById(vaca._id).populate(populate);
+    if(!vacacheck)
+      throw { message: 'Vaca with id does not exist.'};
+    if(vacacheck.location.owner.id !== userId)
+      throw { message: 'Vaca does not belongs to user.'};
+  }
   let vacaDatabase = new vacaModel({
     _id : vaca._id,
     name: vaca.name,
@@ -90,8 +114,9 @@ exports.editVaca = async function(vaca) {
     weight: vaca.weight
   });
   await vacaModel.findOneAndUpdate({ _id: vaca._id },vacaDatabase);
-  let savedVaca = await vacaModel.findOne({_id: vaca._id }).populate({path: 'location', select: 'name'});
-  savedVaca = savedVaca.toObject();
+  let savedVaca = await vacaModel.findById(vaca._id)
+    .populate(populate)
+    .populate(populate2);
   delete savedVaca['__v'];
   return savedVaca;
 }
@@ -113,12 +138,26 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
     limit = 10;
   let vaca;
   let find = {};
-  let populate = {path: 'location', select: 'name, owner',populate: { path: 'owner', select: 'user' }};
-  let populate2 = {path: 'actividades', select: 'sampleDate, latitude, longitude', limit: 10};
-  if(userId)
-    find = {'location.owner': userId};
-  if(loteId)
-    find = {'location': loteId};
+  if(userId){
+    let lotesId = await loteModel.find({owner: userId}).select("_id");
+    if(!lotesId || !lotesId.length)
+      throw { message: 'User does have any lotes.'};
+    if(loteId){
+      if(lotesId.map(((lot) => {return lot.id;})).indexOf(loteId) === -1){
+        throw { message: 'User does have lote with id ' + loteId};
+      }
+    }
+    find.location = { $in: lotesId};
+  }else{
+    if(loteId){
+      let lote = await loteModel.findById(loteId);
+      if(!lote){
+        throw { message: 'Lote does not exist ' + loteId};
+      }else{
+        find.location = loteId;
+      }
+    }
+  }
   if(orderBy)
     vaca = await vacaModel.find(find)
       .populate(populate)
@@ -127,6 +166,7 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
   else
     vaca = await vacaModel.find(find)
     .populate(populate)
+    .populate(populate2)
     .skip(skip).limit(limit);
   if(!vaca)
     throw { message: 'User does not exists with ID: ' + id };
@@ -143,13 +183,12 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
  **/
 exports.getVacasById = async function(id,userId) {
   let options = { _id: id };
-  if(userId)
-    options.owner = userId;
-  let vaca = await vacaModel.findOne(options)
-    .populate({path: 'location', select: 'name'});
+  let vaca = await vacaModel.findOne(options).populate(populate)
+    .populate(populate2);
   if(!vaca)
     throw { message: 'Vaca does not exists with ID: ' + id };
-    vaca = vaca.toObject();
+  if(userId && vaca.location.owner.id !== userId)
+    throw { message: 'Vaca does not belong to user: ' + userId };
   return vaca;
 }
 
