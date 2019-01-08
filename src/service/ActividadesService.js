@@ -1,14 +1,27 @@
 'use strict';
 
+const rl = require('readline');
+const fs = require('fs');
+
+const vacasService = require('./VacasService');
+const vacasModel = require('../database/models/vacas');
+const usersModel = require('../database/models/users');
+const lotesModel = require('../database/models/lotes');
+const actividadesModel = require('../database/models/actividades');
+
+const pattern_old ='%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
+
+const node_grok = require('node-grok').loadDefaultSync();
+const parser_old = node_grok.createPattern(pattern_old);
 
 /**
  * Add one Actividad.
  * Add one Actividad.
  *
- * vaca Actividades 
+ * vaca Actividades
  * returns Vacas
  **/
-exports.addActividad = function(vaca) {
+exports.addActividad = async function(vaca) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
@@ -49,66 +62,69 @@ exports.addActividad = function(vaca) {
  * userId Long id of user. Only for admin users. (optional)
  * returns UploadResponse
  **/
-exports.addActividades = function(upfile,userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "nuevas_vacas" : [ {
-    "weigth" : 1.4658129,
-    "months" : 6.02745618307040320615897144307382404804229736328125,
-    "name" : "name",
-    "location" : {
-      "latitude" : 6.0274563,
-      "name" : "name",
-      "id" : 0,
-      "longitude" : 1.4658129
-    },
-    "id" : 0,
-    "actividades" : [ {
-      "date" : "2000-01-23T04:56:07.000+00:00",
-      "latitude" : 5.962134,
-      "longitude" : 5.637377
-    }, {
-      "date" : "2000-01-23T04:56:07.000+00:00",
-      "latitude" : 5.962134,
-      "longitude" : 5.637377
-    } ]
-  }, {
-    "weigth" : 1.4658129,
-    "months" : 6.02745618307040320615897144307382404804229736328125,
-    "name" : "name",
-    "location" : {
-      "latitude" : 6.0274563,
-      "name" : "name",
-      "id" : 0,
-      "longitude" : 1.4658129
-    },
-    "id" : 0,
-    "actividades" : [ {
-      "date" : "2000-01-23T04:56:07.000+00:00",
-      "latitude" : 5.962134,
-      "longitude" : 5.637377
-    }, {
-      "date" : "2000-01-23T04:56:07.000+00:00",
-      "latitude" : 5.962134,
-      "longitude" : 5.637377
-    } ]
-  } ],
-  "lineas_con_error" : [ {
-    "linea_number" : 6,
-    "linea" : "linea"
-  }, {
-    "linea_number" : 6,
-    "linea" : "linea"
-  } ],
-  "actividades_insertadas" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+exports.addActividades = async function(upfile,userId,loteId,collectingDate) {
+  const user = await usersModel.findById(userId);
+  if(!user)
+    throw { message: 'User does not exists.'};
+  const lote = await lotesModel.findOne({ _id: loteId, owner: userId});
+  if(!lote)
+    throw { message: 'Lote does not exists or it does not belongs to the user specified.'};
+  let vacas;
+  let vacasId = [];
+  if(!collectingDate)
+    collectingDate = new Date();
+  vacas = await vacasService.getVacas(0,1000,null, null, userId,loteId);
+  if(vacas){
+    vacasId = vacas.map((vac)=>{
+      return vac.reference;
+    });
+  }
+
+  let lines = rl.createInterface({
+    input:fs.createReadStream(upfile)
+    .on('error', (err) =>{
+      console.log(err);
+    })
   });
+
+  await lines.on('line', async function(line){
+    let arreglo = parser_old.parseSync(line);
+    let vacaID,vacaIndex;
+    if(arreglo != null){
+      let res = arreglo.dia.split("");
+      //var fechaConstruida = new Date("20"+res[4]+res[5],Number(""+res[2]+res[3])-1,res[0]+res[1],arreglo.hora,arreglo.minuto,arreglo.segundo);
+      var fechaConstruida = new Date();
+      fechaConstruida.setFullYear("20"+res[3]+res[4]);
+      fechaConstruida.setMonth(Number(""+res[1]+res[2])-1);
+      fechaConstruida.setDate(res[0]);
+      fechaConstruida.setHours(arreglo.hora-1);
+      fechaConstruida.setMinutes(arreglo.minuto);
+      fechaConstruida.setSeconds(arreglo.segundo);
+      var act = new actividadesModel({
+        sampleDate: fechaConstruida,
+        latitude: arreglo.latitud,
+        longitude: arreglo.longitud,
+        collectingDate: collectingDate,
+        insertDate: new Date()
+      });
+      vacaIndex = vacasId.indexOf(arreglo.id);
+      if( vacaIndex === -1){
+        let vaquita = new vacasModel({
+          location: loteId,
+          reference: arreglo.id
+        });
+        let mumu = await vaquita.save();
+        vacasId.push(arreglo.id);
+        vacaID = mumu._id;
+      }else{
+        vacaID = vacas[vacaIndex];
+      }
+      act.vaca = vacaID;
+      await act.save();
+    }else{
+      console.log("Not matched line" + line);
+    }
+});
 }
 
 
@@ -119,7 +135,7 @@ exports.addActividades = function(upfile,userId) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteActividad = function(id) {
+exports.deleteActividad = async function(id) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
@@ -141,7 +157,7 @@ exports.deleteActividad = function(id) {
  * lote Vacas
  * returns Actividades
  **/
-exports.editActividad = function(lote) {
+exports.editActividad = async function(lote) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
@@ -165,7 +181,7 @@ exports.editActividad = function(lote) {
  * id Long id to delete
  * returns Actividades
  **/
-exports.getActividadById = function(id,userId) {
+exports.getActividadById = async function(id,userId) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
@@ -193,7 +209,7 @@ exports.getActividadById = function(id,userId) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getActividades = function(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate) {
+exports.getActividades = async function(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = [ {

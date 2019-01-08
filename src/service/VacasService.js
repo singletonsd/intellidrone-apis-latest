@@ -146,8 +146,10 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
       if(lotesId.map(((lot) => {return lot.id;})).indexOf(loteId) === -1){
         throw { message: 'User does have lote with id ' + loteId};
       }
+      find.location = loteId;
+    }else{
+      find.location = { $in: lotesId};
     }
-    find.location = { $in: lotesId};
   }else{
     if(loteId){
       let lote = await loteModel.findById(loteId);

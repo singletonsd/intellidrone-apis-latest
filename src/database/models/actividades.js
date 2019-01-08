@@ -7,7 +7,7 @@ const ActividadesSchema = new Schema({
     sampleDate: { type: Date },
     latitude: { type: Number },
     longitude: { type: Number },
-    colectionDate: { type: Date },
+    collectingDate: { type: Date },
     insertDate: { type: Date },
     hdop: { type: Number },
     satellites: { type: Number },

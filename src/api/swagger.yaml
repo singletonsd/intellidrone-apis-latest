@@ -1239,13 +1239,13 @@ paths:
         type: "string"
       - name: "fromDate"
         in: "query"
-        description: "Date from (included)"
+        description: "Date from (included) of the sample date."
         required: false
         type: "string"
         format: "date-time"
       - name: "untilDate"
         in: "query"
-        description: "Date until (included)"
+        description: "Date until (included) of the sample date"
         required: false
         type: "string"
         format: "date-time"
@@ -1800,13 +1800,24 @@ paths:
       - name: "upfile"
         in: "formData"
         description: "The file to upload."
-        required: false
+        required: true
         type: "file"
       - name: "userId"
         in: "query"
-        description: "id of user. Only for admin users."
+        description: "id of user. Only for admin users (mandatory)."
         required: false
         type: "string"
+      - name: "loteId"
+        in: "query"
+        description: "id of lote."
+        required: true
+        type: "string"
+      - name: "collectingDate"
+        in: "query"
+        description: "Date of the data collecting. Default: today."
+        required: false
+        type: "string"
+        format: "date-time"
       responses:
         200:
           description: "Request OK."
