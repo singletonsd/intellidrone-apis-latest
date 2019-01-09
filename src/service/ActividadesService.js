@@ -1,15 +1,15 @@
 'use strict';
 
 const rl = require('readline');
-const fs = require('fs');
-
+const streamifier = require('streamifier');
+const es = require('event-stream');
 const vacasService = require('./VacasService');
 const vacasModel = require('../database/models/vacas');
 const usersModel = require('../database/models/users');
 const lotesModel = require('../database/models/lotes');
 const actividadesModel = require('../database/models/actividades');
 
-const pattern_old ='%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
+const pattern_old = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
 
 const node_grok = require('node-grok').loadDefaultSync();
 const parser_old = node_grok.createPattern(pattern_old);
@@ -21,30 +21,30 @@ const parser_old = node_grok.createPattern(pattern_old);
  * vaca Actividades
  * returns Vacas
  **/
-exports.addActividad = async function(vaca) {
-  return new Promise(function(resolve, reject) {
+exports.addActividad = async function (vaca) {
+  return new Promise(function (resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-};
+      "weigth": 1.4658129,
+      "months": 6.02745618307040320615897144307382404804229736328125,
+      "name": "name",
+      "location": {
+        "latitude": 6.0274563,
+        "name": "name",
+        "id": 0,
+        "longitude": 1.4658129
+      },
+      "id": 0,
+      "actividades": [{
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }, {
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }]
+    };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {
@@ -62,42 +62,48 @@ exports.addActividad = async function(vaca) {
  * userId Long id of user. Only for admin users. (optional)
  * returns UploadResponse
  **/
-exports.addActividades = async function(upfile,userId,loteId,collectingDate) {
+exports.addActividades = async function (upfile, userId, loteId, collectingDate) {
   const user = await usersModel.findById(userId);
-  if(!user)
-    throw { message: 'User does not exists.'};
-  const lote = await lotesModel.findOne({ _id: loteId, owner: userId});
-  if(!lote)
-    throw { message: 'Lote does not exists or it does not belongs to the user specified.'};
+  if (!user)
+    throw { message: 'User does not exists.' };
+  const lote = await lotesModel.findOne({ _id: loteId, owner: userId });
+  if (!lote)
+    throw { message: 'Lote does not exists or it does not belongs to the user specified.' };
   let vacas;
   let vacasId = [];
-  if(!collectingDate)
+  if (!collectingDate)
     collectingDate = new Date();
-  vacas = await vacasService.getVacas(0,1000,null, null, userId,loteId);
-  if(vacas){
-    vacasId = vacas.map((vac)=>{
+  vacas = await vacasService.getVacas(0, 1000, null, null, userId, loteId);
+  if (vacas) {
+    vacasId = vacas.map((vac) => {
       return vac.reference;
     });
   }
-
-  let lines = rl.createInterface({
-    input:fs.createReadStream(upfile)
-    .on('error', (err) =>{
-      console.log(err);
-    })
-  });
-
-  await lines.on('line', async function(line){
+  // let lines = rl.createInterface({
+  //   input: streamifier.createReadStream(upfile.buffer, { enconding: upfile.enconding })
+  //     .on('error', (err) => {
+  //       console.log(err);
+  //     })
+  // });
+  let vacaID, vacaIndex;
+  let line_number = 0;
+  let nuevas_vacas = [];
+  let lineas_con_error = [];
+  let insertadas = 0;
+  let s = await streamifier.createReadStream(upfile.buffer, { enconding: upfile.enconding })
+    .pipe(es.split()).pipe(es.mapSync(async function(line){
+    // lines.on('line', function (line) {
+      s.pause();
+    line_number++;
     let arreglo = parser_old.parseSync(line);
-    let vacaID,vacaIndex;
-    if(arreglo != null){
+    if (arreglo) {
       let res = arreglo.dia.split("");
       //var fechaConstruida = new Date("20"+res[4]+res[5],Number(""+res[2]+res[3])-1,res[0]+res[1],arreglo.hora,arreglo.minuto,arreglo.segundo);
       var fechaConstruida = new Date();
-      fechaConstruida.setFullYear("20"+res[3]+res[4]);
-      fechaConstruida.setMonth(Number(""+res[1]+res[2])-1);
+      fechaConstruida.setFullYear("20" + res[3] + res[4]);
+      fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
       fechaConstruida.setDate(res[0]);
-      fechaConstruida.setHours(arreglo.hora-1);
+      fechaConstruida.setHours(arreglo.hora - 1);
       fechaConstruida.setMinutes(arreglo.minuto);
       fechaConstruida.setSeconds(arreglo.segundo);
       var act = new actividadesModel({
@@ -108,7 +114,7 @@ exports.addActividades = async function(upfile,userId,loteId,collectingDate) {
         insertDate: new Date()
       });
       vacaIndex = vacasId.indexOf(arreglo.id);
-      if( vacaIndex === -1){
+      if (vacaIndex === -1) {
         let vaquita = new vacasModel({
           location: loteId,
           reference: arreglo.id
@@ -116,15 +122,37 @@ exports.addActividades = async function(upfile,userId,loteId,collectingDate) {
         let mumu = await vaquita.save();
         vacasId.push(arreglo.id);
         vacaID = mumu._id;
-      }else{
+        nuevas_vacas.push(mumu);
+      } else {
         vacaID = vacas[vacaIndex];
       }
       act.vaca = vacaID;
-      await act.save();
-    }else{
-      console.log("Not matched line" + line);
+      let actSaved = await act.save();
+      if(!actSaved){
+        lineas_con_error.push({
+          linea_number: line_number,
+          linea: line
+        });
+          console.log("Cannot save line (" + line_number + ")." + line);
+      } else {
+        insertadas++;
+      }
+    } else {
+      console.log("Not matched line (" + line_number + ")." + line);
+      lineas_con_error.push({
+        linea_number: line_number,
+        linea: line
+      });
     }
-});
+    s.resume();
+  // });
+  })
+  .on('end', function(){
+    return { nuevas_vacas: nuevas_vacas, lineas_con_error: lineas_con_error, actividades_insertadas: insertadas};
+  }));
+  // lines.on('close', function(){
+  // return { nuevas_vacas: nuevas_vacas, lineas_con_error: lineas_con_error, actividades_insertadas: insertadas};
+  // });
 }
 
 
@@ -135,12 +163,12 @@ exports.addActividades = async function(upfile,userId,loteId,collectingDate) {
  * id Long id to delete
  * returns DeletedResponse
  **/
-exports.deleteActividad = async function(id) {
-  return new Promise(function(resolve, reject) {
+exports.deleteActividad = async function (id) {
+  return new Promise(function (resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "id" : 0
-};
+      "id": 0
+    };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {
@@ -157,14 +185,14 @@ exports.deleteActividad = async function(id) {
  * lote Vacas
  * returns Actividades
  **/
-exports.editActividad = async function(lote) {
-  return new Promise(function(resolve, reject) {
+exports.editActividad = async function (lote) {
+  return new Promise(function (resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "date" : "2000-01-23T04:56:07.000+00:00",
-  "latitude" : 5.962134,
-  "longitude" : 5.637377
-};
+      "date": "2000-01-23T04:56:07.000+00:00",
+      "latitude": 5.962134,
+      "longitude": 5.637377
+    };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {
@@ -181,14 +209,14 @@ exports.editActividad = async function(lote) {
  * id Long id to delete
  * returns Actividades
  **/
-exports.getActividadById = async function(id,userId) {
-  return new Promise(function(resolve, reject) {
+exports.getActividadById = async function (id, userId) {
+  return new Promise(function (resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "date" : "2000-01-23T04:56:07.000+00:00",
-  "latitude" : 5.962134,
-  "longitude" : 5.637377
-};
+      "date": "2000-01-23T04:56:07.000+00:00",
+      "latitude": 5.962134,
+      "longitude": 5.637377
+    };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {
@@ -209,50 +237,50 @@ exports.getActividadById = async function(id,userId) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getActividades = async function(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate) {
-  return new Promise(function(resolve, reject) {
+exports.getActividades = async function (skip, limit, orderBy, filter, userId, loteId, vacaId, fromDate, untilDate) {
+  return new Promise(function (resolve, reject) {
     var examples = {};
-    examples['application/json'] = [ {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-}, {
-  "weigth" : 1.4658129,
-  "months" : 6.02745618307040320615897144307382404804229736328125,
-  "name" : "name",
-  "location" : {
-    "latitude" : 6.0274563,
-    "name" : "name",
-    "id" : 0,
-    "longitude" : 1.4658129
-  },
-  "id" : 0,
-  "actividades" : [ {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  }, {
-    "date" : "2000-01-23T04:56:07.000+00:00",
-    "latitude" : 5.962134,
-    "longitude" : 5.637377
-  } ]
-} ];
+    examples['application/json'] = [{
+      "weigth": 1.4658129,
+      "months": 6.02745618307040320615897144307382404804229736328125,
+      "name": "name",
+      "location": {
+        "latitude": 6.0274563,
+        "name": "name",
+        "id": 0,
+        "longitude": 1.4658129
+      },
+      "id": 0,
+      "actividades": [{
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }, {
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }]
+    }, {
+      "weigth": 1.4658129,
+      "months": 6.02745618307040320615897144307382404804229736328125,
+      "name": "name",
+      "location": {
+        "latitude": 6.0274563,
+        "name": "name",
+        "id": 0,
+        "longitude": 1.4658129
+      },
+      "id": 0,
+      "actividades": [{
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }, {
+        "date": "2000-01-23T04:56:07.000+00:00",
+        "latitude": 5.962134,
+        "longitude": 5.637377
+      }]
+    }];
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {

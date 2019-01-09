@@ -34,6 +34,7 @@
     "connect": "3.6.6",
     "cors": "2.8.5",
     "dotenv": "6.2.0",
+    "event-stream": "4.0.1",
     "express-jwt": "5.3.1",
     "js-yaml": "3.3.0",
     "lodash": "4.17.11",
@@ -41,7 +42,9 @@
     "node-grok": "2.0.3",
     "normalize-port": "1.0.0",
     "path-to-regexp": "2.4.0",
+    "readline-promise": "1.0.3",
     "shelljs": "0.8.3",
+    "streamifier": "0.1.1",
     "swagger-tools": "0.10.4"
   }
 }
