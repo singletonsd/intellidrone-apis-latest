@@ -1,6 +1,5 @@
 'use strict';
 
-const rl = require('readline');
 const streamifier = require('streamifier');
 const es = require('event-stream');
 const vacasService = require('./VacasService');
@@ -10,9 +9,11 @@ const lotesModel = require('../database/models/lotes');
 const actividadesModel = require('../database/models/actividades');
 
 const pattern_old = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
-
+const pattern_new = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, MSG: %{NUMBER:inecesario},%{NUMBER:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo},%{NUMBER:intentosLora} ';
 const node_grok = require('node-grok').loadDefaultSync();
 const parser_old = node_grok.createPattern(pattern_old);
+const parser_new = node_grok.createPattern(pattern_new);
+const populate = {path: 'vaca', select: 'name _id'};
 
 /**
  * Add one Actividad.
@@ -79,80 +80,76 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
       return vac.reference;
     });
   }
-  // let lines = rl.createInterface({
-  //   input: streamifier.createReadStream(upfile.buffer, { enconding: upfile.enconding })
-  //     .on('error', (err) => {
-  //       console.log(err);
-  //     })
-  // });
   let vacaID, vacaIndex;
   let line_number = 0;
   let nuevas_vacas = [];
   let lineas_con_error = [];
   let insertadas = 0;
-  let s = await streamifier.createReadStream(upfile.buffer, { enconding: upfile.enconding })
-    .pipe(es.split()).pipe(es.mapSync(async function(line){
-    // lines.on('line', function (line) {
-      s.pause();
-    line_number++;
-    let arreglo = parser_old.parseSync(line);
-    if (arreglo) {
-      let res = arreglo.dia.split("");
-      //var fechaConstruida = new Date("20"+res[4]+res[5],Number(""+res[2]+res[3])-1,res[0]+res[1],arreglo.hora,arreglo.minuto,arreglo.segundo);
-      var fechaConstruida = new Date();
-      fechaConstruida.setFullYear("20" + res[3] + res[4]);
-      fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
-      fechaConstruida.setDate(res[0]);
-      fechaConstruida.setHours(arreglo.hora - 1);
-      fechaConstruida.setMinutes(arreglo.minuto);
-      fechaConstruida.setSeconds(arreglo.segundo);
-      var act = new actividadesModel({
-        sampleDate: fechaConstruida,
-        latitude: arreglo.latitud,
-        longitude: arreglo.longitud,
-        collectingDate: collectingDate,
-        insertDate: new Date()
-      });
-      vacaIndex = vacasId.indexOf(arreglo.id);
-      if (vacaIndex === -1) {
-        let vaquita = new vacasModel({
-          location: loteId,
-          reference: arreglo.id
-        });
-        let mumu = await vaquita.save();
-        vacasId.push(arreglo.id);
-        vacaID = mumu._id;
-        nuevas_vacas.push(mumu);
-      } else {
-        vacaID = vacas[vacaIndex];
-      }
-      act.vaca = vacaID;
-      let actSaved = await act.save();
-      if(!actSaved){
-        lineas_con_error.push({
-          linea_number: line_number,
-          linea: line
-        });
-          console.log("Cannot save line (" + line_number + ")." + line);
-      } else {
-        insertadas++;
-      }
-    } else {
-      console.log("Not matched line (" + line_number + ")." + line);
-      lineas_con_error.push({
-        linea_number: line_number,
-        linea: line
-      });
-    }
-    s.resume();
-  // });
-  })
-  .on('end', function(){
-    return { nuevas_vacas: nuevas_vacas, lineas_con_error: lineas_con_error, actividades_insertadas: insertadas};
-  }));
-  // lines.on('close', function(){
-  // return { nuevas_vacas: nuevas_vacas, lineas_con_error: lineas_con_error, actividades_insertadas: insertadas};
-  // });
+  return new Promise((resolve, reject) => {
+    let s = streamifier.createReadStream(upfile.buffer, { enconding: upfile.enconding })
+      .pipe(es.split()).pipe(es.mapSync(async function (line) {
+        // lines.on('line', function (line) {
+        s.pause();
+        line_number++;
+        let arreglo = parser_old.parseSync(line);
+        if(!arreglo)
+          arreglo = parser_new.parseSync(line);
+        if (arreglo) {
+          let res = arreglo.dia.split("");
+          //var fechaConstruida = new Date("20"+res[4]+res[5],Number(""+res[2]+res[3])-1,res[0]+res[1],arreglo.hora,arreglo.minuto,arreglo.segundo);
+          var fechaConstruida = new Date();
+          fechaConstruida.setFullYear("20" + res[3] + res[4]);
+          fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
+          fechaConstruida.setDate(res[0]);
+          fechaConstruida.setHours(arreglo.hora - 1);
+          fechaConstruida.setMinutes(arreglo.minuto);
+          fechaConstruida.setSeconds(arreglo.segundo);
+          var act = new actividadesModel({
+            sampleDate: fechaConstruida,
+            latitude: arreglo.latitud,
+            longitude: arreglo.longitud,
+            collectingDate: collectingDate,
+            insertDate: new Date()
+          });
+          if(arreglo.intentosLora)
+            act.connectionsAttempts = arreglo.intentosLora;
+          vacaIndex = vacasId.indexOf(arreglo.id);
+          if (vacaIndex === -1) {
+            let vaquita = new vacasModel({
+              location: loteId,
+              reference: arreglo.id
+            });
+            let mumu = await vaquita.save();
+            vacasId.push(arreglo.id);
+            vacaID = mumu._id;
+            nuevas_vacas.push(mumu);
+          } else {
+            vacaID = vacas[vacaIndex];
+          }
+          act.vaca = vacaID;
+          let actSaved = await act.save();
+          if (!actSaved) {
+            lineas_con_error.push({
+              linea_number: line_number,
+              linea: line
+            });
+            console.log("Cannot save line (" + line_number + ")." + line);
+          } else {
+            insertadas++;
+          }
+        } else {
+          console.log("Not matched line (" + line_number + ")." + line);
+          lineas_con_error.push({
+            linea_number: line_number,
+            linea: line
+          });
+        }
+        s.resume();
+      })
+        .on('end', function () {
+          resolve({ nuevas_vacas: nuevas_vacas, lineas_con_error: lineas_con_error, actividades_insertadas: insertadas });
+        }));
+  });
 }
 
 
@@ -238,54 +235,32 @@ exports.getActividadById = async function (id, userId) {
  * returns List
  **/
 exports.getActividades = async function (skip, limit, orderBy, filter, userId, loteId, vacaId, fromDate, untilDate) {
-  return new Promise(function (resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [{
-      "weigth": 1.4658129,
-      "months": 6.02745618307040320615897144307382404804229736328125,
-      "name": "name",
-      "location": {
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      },
-      "id": 0,
-      "actividades": [{
-        "date": "2000-01-23T04:56:07.000+00:00",
-        "latitude": 5.962134,
-        "longitude": 5.637377
-      }, {
-        "date": "2000-01-23T04:56:07.000+00:00",
-        "latitude": 5.962134,
-        "longitude": 5.637377
-      }]
-    }, {
-      "weigth": 1.4658129,
-      "months": 6.02745618307040320615897144307382404804229736328125,
-      "name": "name",
-      "location": {
-        "latitude": 6.0274563,
-        "name": "name",
-        "id": 0,
-        "longitude": 1.4658129
-      },
-      "id": 0,
-      "actividades": [{
-        "date": "2000-01-23T04:56:07.000+00:00",
-        "latitude": 5.962134,
-        "longitude": 5.637377
-      }, {
-        "date": "2000-01-23T04:56:07.000+00:00",
-        "latitude": 5.962134,
-        "longitude": 5.637377
-      }]
-    }];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+  if(limit <= 0)
+    limit = 10;
+  let vacasId;
+  if(userId){
+    let vacas;
+    if(loteId)
+      vacas = await vacasService.getVacas(0,1000,null,null,userId,loteId);
+    else
+      vacas = await vacasService.getVacas(0,1000,null,null,userId,null);
+    if(vacas && vacas.length){
+      vacasId = vacas.map((val)=>{ return val.id;});
+    }else
+      return;
+  }
+  let optionsFind = {};
+  if(vacaId)
+    optionsFind.vaca = vacaId;
+  else
+    optionsFind.vaca = { $in: vacasId };
+  let actividades;
+  if(orderBy)
+    actividades = await actividadesModel.find(optionsFind)
+      .populate(populate)
+      .skip(skip).limit(limit).sort(orderBy);
+  else
+    actividades = await actividadesModel.find(optionsFind)
+    .populate(populate).skip(skip).limit(limit);
+  return actividades;
 }
-

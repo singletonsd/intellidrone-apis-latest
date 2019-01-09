@@ -4,7 +4,7 @@ const vacaModel = require('../database/models/vacas');
 const loteModel = require('../database/models/lotes');
 
 const populate = {path: 'location', select: 'name owner',populate: { path: 'owner', select: '_id user' }};
-const populate2 = {path: 'actividades', select: 'sampleDate, latitude, longitude', limit: 10};
+const populate2 = {path: 'actividades', select: 'sampleDate latitude longitude _id'};
 /**
  * Add one vaca.
  * Add one vaca.
@@ -170,8 +170,6 @@ exports.getVacas = async function(skip,limit,orderBy,filter,userId,loteId) {
     .populate(populate)
     .populate(populate2)
     .skip(skip).limit(limit);
-  if(!vaca)
-    throw { message: 'User does not exists with ID: ' + id };
   return vaca;
 }
 
