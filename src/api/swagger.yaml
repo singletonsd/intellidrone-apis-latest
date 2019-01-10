@@ -1239,16 +1239,16 @@ paths:
         type: "string"
       - name: "fromDate"
         in: "query"
-        description: "Date from (included) of the sample date."
+        description: "Date from (included) of the sample date. Format: YYYY-MM-DD."
         required: false
         type: "string"
-        format: "date-time"
+        format: "date"
       - name: "untilDate"
         in: "query"
-        description: "Date until (included) of the sample date"
+        description: "Date until (included) of the sample date. Format: YYYY-MM-DD."
         required: false
         type: "string"
-        format: "date-time"
+        format: "date"
       responses:
         200:
           description: "Request OK."

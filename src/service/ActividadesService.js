@@ -256,7 +256,8 @@ exports.getActividadById = async function (id, userId) {
  * userId Long id of user. Only for admin users. (optional)
  * returns List
  **/
-exports.getActividades = async function (skip, limit, orderBy, filter, userId, loteId, vacaId, fromDate, untilDate) {
+exports.getActividades = async function (skip, limit, orderBy, filter,
+    userId, loteId, vacaId, fromDate, untilDate) {
   if(limit <= 0)
     limit = 10;
   let vacasId;
@@ -276,6 +277,13 @@ exports.getActividades = async function (skip, limit, orderBy, filter, userId, l
     optionsFind.vaca = vacaId;
   else
     optionsFind.vaca = { $in: vacasId };
+  optionsFind.sampleDate = {};
+  if(fromDate)
+    optionsFind.sampleDate.$gte = fromDate;
+  if(untilDate)
+    optionsFind.sampleDate.$lte = untilDate
+  if(!optionsFind.sampleDate.$gte && !optionsFind.sampleDate.$lte)
+    delete optionsFind.sampleDate;
   let actividades;
   if(orderBy)
     actividades = await actividadesModel.find(optionsFind)
