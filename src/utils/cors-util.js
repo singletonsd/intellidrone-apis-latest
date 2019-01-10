@@ -10,7 +10,7 @@ module.exports = function(app){
 const corsOptions = {
   origin: whitelist
   ,credentials: true
-  ,methods: ['GET','HEAD','OPTIONS','POST','PUT']
+  ,methods: ['GET','HEAD','OPTIONS','POST','PUT','DELETE']
   ,allowedHeaders: ['Access-Control-Allow-Headers'
     , 'Origin,Accept'
     , 'X-Requested-With'
