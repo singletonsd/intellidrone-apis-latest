@@ -2,6 +2,7 @@
 
 const streamifier = require('streamifier');
 const es = require('event-stream');
+const moment = require('moment');
 const vacasService = require('./VacasService');
 const vacasModel = require('../database/models/vacas');
 const usersModel = require('../database/models/users');
@@ -72,11 +73,18 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
     throw { message: 'Lote does not exists or it does not belongs to the user specified.' };
   let vacas;
   let vacasId = [];
+  let vacasIdAll = []
   if (!collectingDate)
     collectingDate = new Date();
   vacas = await vacasService.getVacas(0, 1000, null, null, userId, loteId);
   if (vacas) {
     vacasId = vacas.map((vac) => {
+      return vac.reference;
+    });
+  }
+  vacas = await vacasModel.find();
+  if (vacas) {
+    vacasIdAll = vacas.map((vac) => {
       return vac.reference;
     });
   }
@@ -95,16 +103,28 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
         if(!arreglo)
           arreglo = parser_new.parseSync(line);
         if (arreglo) {
+          // let fechaConstruida = moment(arreglo.primerString);
+          // fechaConstruida.add(arreglo.hora,'hours');
+          // fechaConstruida.add(arreglo.minuto,'minutes');
+          // fechaConstruida.add(arreglo.segundo,'seconds');
           let res = arreglo.dia.split("");
-          //var fechaConstruida = new Date("20"+res[4]+res[5],Number(""+res[2]+res[3])-1,res[0]+res[1],arreglo.hora,arreglo.minuto,arreglo.segundo);
-          var fechaConstruida = new Date();
-          fechaConstruida.setFullYear("20" + res[3] + res[4]);
-          fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
-          fechaConstruida.setDate(res[0]);
-          fechaConstruida.setHours(arreglo.hora - 1);
-          fechaConstruida.setMinutes(arreglo.minuto);
-          fechaConstruida.setSeconds(arreglo.segundo);
-          var act = new actividadesModel({
+          let fechaConstruida = new Date();
+          if(res.length === 5){
+            fechaConstruida.setFullYear("20" + res[3] + res[4]);
+            fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
+            fechaConstruida.setDate(res[0]);
+            fechaConstruida.setHours(arreglo.hora);
+            fechaConstruida.setMinutes(arreglo.minuto);
+            fechaConstruida.setSeconds(arreglo.segundo);
+          }else{
+            fechaConstruida.setFullYear("20" + res[4] + res[5]);
+            fechaConstruida.setMonth(Number("" + res[2] + res[3]) - 1);
+            fechaConstruida.setDate(Number("" + res[0] + res[1]));
+            fechaConstruida.setHours(arreglo.hora);
+            fechaConstruida.setMinutes(arreglo.minuto);
+            fechaConstruida.setSeconds(arreglo.segundo);
+          }
+          let act = new actividadesModel({
             sampleDate: fechaConstruida,
             latitude: arreglo.latitud,
             longitude: arreglo.longitud,
@@ -115,6 +135,8 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
             act.connectionsAttempts = arreglo.intentosLora;
           vacaIndex = vacasId.indexOf(arreglo.id);
           if (vacaIndex === -1) {
+            if(vacasIdAll.indexOf(arreglo.id) !== -1)
+              reject({ message: 'Vaca with reference ' + arreglo.id + ' exists and it belongs to another user or lote.'});
             let vaquita = new vacasModel({
               location: loteId,
               reference: arreglo.id
