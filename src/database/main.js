@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 
 require('dotenv').config();
 var fs = require('fs');
-var database = JSON.parse(fs.readFileSync('./database.json', 'utf8'));
+
+let file = process.env.DATABASE_FILE;
+if(!file)
+  file = './database.json';
+var database = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 var uri = 'mongodb://';
 uri = uri + database.main[process.env.DB_MAIN_CLIENT].connection.host;//+'/';

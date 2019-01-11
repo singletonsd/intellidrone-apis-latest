@@ -29,8 +29,8 @@ function usage(){
 }
 
 TAG=latest
-NAME=registry.gitlab.com/intellidrone/api
-CI_COMMIT_SHA=112233
+NAME=registry.gitlab.com/intellidrone/api_new
+CI_COMMIT_SHA=$(git rev-parse HEAD | cut -c 1-8)
 if [ $# -ne 3 ]; then
   echo -e "Illegal number of parameters"
   echo -e "$(usage)"

@@ -1,0 +1,7 @@
+/.vscode/
+/.swagger-codegen/
+.gitlab-ci.yml
+.swagger-codegen-ignore
+README.md
+/data/
+/assets/

@@ -2,3 +2,5 @@
 .env
 /keys/
 app_tokens.json
+/data/
+/assets/
