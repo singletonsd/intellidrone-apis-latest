@@ -35,4 +35,7 @@ VOLUME /usr/app/assets
 # Show current folder structure in logs
 RUN ls -al -R src && ls -al .
 
+RUN apk del bash openssh-keygen python bash make gcc g++ \
+    && rm -rf /var/cache/apk/*
+
 CMD [ "pm2-runtime", "start", "src/server.js" ]
