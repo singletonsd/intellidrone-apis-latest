@@ -109,7 +109,7 @@ deploy-image-develop:
     - build
   before_script:
     - *login  # This is a reference to the anchor.
-    - apk add --update bash
+    - apk add --update bash git
   script:
     *build_push # This is a reference to the anchor.
   when: on_success
@@ -129,7 +129,7 @@ deploy-image-master:
     - build
   before_script:
     - *login  # This is a reference to the anchor.
-    - apk add --update bash
+    - apk add --update bash git
   script:
     *build_push # This is a reference to the anchor.
   when: on_success
