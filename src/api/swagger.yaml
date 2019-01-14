@@ -1242,13 +1242,13 @@ paths:
         description: "Date from (included) of the sample date. Format: YYYY-MM-DD."
         required: false
         type: "string"
-        format: "date"
+        format: "date-time"
       - name: "untilDate"
         in: "query"
         description: "Date until (included) of the sample date. Format: YYYY-MM-DD."
         required: false
         type: "string"
-        format: "date"
+        format: "date-time"
       responses:
         200:
           description: "Request OK."
