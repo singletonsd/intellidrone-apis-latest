@@ -1237,15 +1237,20 @@ paths:
         description: "id of vaca."
         required: false
         type: "string"
+      - name: "vacaReference"
+        in: "query"
+        description: "reference of vaca."
+        required: false
+        type: "string"
       - name: "fromDate"
         in: "query"
-        description: "Date from (included) of the sample date. Format: YYYY-MM-DD."
+        description: "Date from (included) of the sample date. Format YYYY-MM-DDTHH:mm:ss.nnZ"
         required: false
         type: "string"
         format: "date-time"
       - name: "untilDate"
         in: "query"
-        description: "Date until (included) of the sample date. Format: YYYY-MM-DD."
+        description: "Date until (included) of the sample date. Format YYYY-MM-DDTHH:mm:ss.nnZ"
         required: false
         type: "string"
         format: "date-time"

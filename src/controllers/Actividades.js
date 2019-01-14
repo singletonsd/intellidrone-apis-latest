@@ -127,10 +127,11 @@ module.exports.getActividades = function getActividades (req, res, next) {
   let vacaId = req.swagger.params['vacaId'].value;
   let fromDate = req.swagger.params['fromDate'].value;
   let untilDate = req.swagger.params['untilDate'].value;
+  let vacaReference = req.swagger.params['vacaReference'].value;
   if(!req.user || !req.user.data || (req.user.data.type !== 'ADMIN' && req.user.data.type !== 'EDITOR')){
     userId = req.user.data._id;
   }
-  Actividades.getActividades(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate)
+  Actividades.getActividades(skip,limit,orderBy,filter,userId,loteId,vacaId,fromDate,untilDate,vacaReference)
     .then(function (response) {
       if(response && response.length)
         utils.writeJson(res, response);

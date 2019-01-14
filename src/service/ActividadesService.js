@@ -14,7 +14,7 @@ const pattern_new = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WOR
 const node_grok = require('node-grok').loadDefaultSync();
 const parser_old = node_grok.createPattern(pattern_old);
 const parser_new = node_grok.createPattern(pattern_new);
-const populate = {path: 'vaca', select: 'name _id'};
+const populate = {path: 'vaca', select: 'name reference'};
 
 /**
  * Add one Actividad.
@@ -72,14 +72,18 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
   if (!lote)
     throw { message: 'Lote does not exists or it does not belongs to the user specified.' };
   let vacas;
+  let vacasRef = [];
+  let vacasIdAll = [];
   let vacasId = [];
-  let vacasIdAll = []
   if (!collectingDate)
     collectingDate = new Date();
   vacas = await vacasService.getVacas(0, 1000, null, null, userId, loteId);
   if (vacas) {
-    vacasId = vacas.map((vac) => {
+    vacasRef = vacas.map((vac) => {
       return vac.reference;
+    });
+    vacasId = vacas.map((vac) => {
+      return vac.id;
     });
   }
   vacas = await vacasModel.find();
@@ -133,7 +137,7 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
           });
           if(arreglo.intentosLora)
             act.connectionsAttempts = arreglo.intentosLora;
-          vacaIndex = vacasId.indexOf(arreglo.id);
+          vacaIndex = vacasRef.indexOf(arreglo.id);
           if (vacaIndex === -1) {
             if(vacasIdAll.indexOf(arreglo.id) !== -1)
               reject({ message: 'Vaca with reference ' + arreglo.id + ' exists and it belongs to another user or lote.'});
@@ -142,11 +146,12 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
               reference: arreglo.id
             });
             let mumu = await vaquita.save();
-            vacasId.push(arreglo.id);
+            vacasRef.push(arreglo.id);
             vacaID = mumu._id;
             nuevas_vacas.push(mumu);
+            vacasId.push(mumu.id);
           } else {
-            vacaID = vacas[vacaIndex];
+            vacaID = vacasId[vacaIndex];
           }
           act.vaca = vacaID;
           let actSaved = await act.save();
@@ -257,26 +262,28 @@ exports.getActividadById = async function (id, userId) {
  * returns List
  **/
 exports.getActividades = async function (skip, limit, orderBy, filter,
-    userId, loteId, vacaId, fromDate, untilDate) {
+    userId, loteId, vacaId, fromDate, untilDate,vacaReference) {
   if(limit <= 0)
     limit = 10;
   let vacasId;
-  if(userId){
-    let vacas;
-    if(loteId)
-      vacas = await vacasService.getVacas(0,1000,null,null,userId,loteId);
-    else
-      vacas = await vacasService.getVacas(0,1000,null,null,userId,null);
-    if(vacas && vacas.length){
-      vacasId = vacas.map((val)=>{ return val.id;});
-    }else
-      return;
-  }
   let optionsFind = {};
   if(vacaId)
     optionsFind.vaca = vacaId;
-  else
+  else if(vacaReference){
+    vacaId = await vacasModel.findOne({ reference: vacaReference});
+    if(vacaId)
+      optionsFind.vaca = vacaId.id;
+  }else{
+    if(userId){
+      let vacas;
+      vacas = await vacasService.getVacas(0,1000,null,null,userId,loteId);
+      if(vacas && vacas.length){
+        vacasId = vacas.map((val)=>{ return val.id;});
+      }else
+        return;
+    }
     optionsFind.vaca = { $in: vacasId };
+  }
   optionsFind.sampleDate = {};
   if(fromDate)
     optionsFind.sampleDate.$gte = fromDate;
@@ -288,7 +295,7 @@ exports.getActividades = async function (skip, limit, orderBy, filter,
   if(orderBy)
     actividades = await actividadesModel.find(optionsFind)
       .populate(populate)
-      .skip(skip).limit(limit).sort(orderBy);
+      .skip(skip).limit(limit).sort(orderBy).skip(skip).limit(limit);
   else
     actividades = await actividadesModel.find(optionsFind)
     .populate(populate).skip(skip).limit(limit);
