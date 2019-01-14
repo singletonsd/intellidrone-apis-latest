@@ -2,8 +2,14 @@ version: "3.3"
 
 services:
   api:
+    environment:
+      SWAGGER_HOST: http://localhost:${PORT}
+      SWAGGER_BASE_PATH: /
+      DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
+      DATABASE_FILE: ./database.json
+      JWT_FILE: ./keys/key.b64.pub}
     volumes:
-      - ./:/usr/src/
+      - ./:/usr/app/
     command:
       - node server.js
       - "--inspect-brk=0.0.0.0"

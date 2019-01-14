@@ -11,6 +11,9 @@ services:
       DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
       DATABASE_FILE: ${DB_MAIN_CLIENT:-./assets/database.json}
       JWT_FILE: ${DB_MAIN_CLIENT:-./assets/key.b64.pub}
+      PORT: ${PORT:-3000}
+    volumes:
+      - ./data/node:/usr/app/assets
     ports:
       - "3000:${PORT:-3000}"
     networks:
@@ -19,10 +22,13 @@ services:
       - mongo
   mongo:
     image: mongo:4.0
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:${PORT_MONGO:-27017}"
     volumes:
-      - ./data:/data/db
+      - ./data/db:/data/db
     networks:
       - db
 
