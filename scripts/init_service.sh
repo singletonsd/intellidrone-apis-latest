@@ -19,7 +19,7 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)"
 
 function usage(){
     echo "Usage"
-    echo "1 - d (development) p (production)"
+    echo "1 - d (development) or p (production)"
 }
 
 STAGE=
