@@ -6,11 +6,11 @@ services:
       context: .
     image: registry.gitlab.com/intellidrone/api_new:${API_VERSION:-latest}
     environment:
-      SWAGGER_HOST: ${SWAGGER_HOST:-http://localhost:${PORT}}
+      SWAGGER_HOST: ${SWAGGER_HOST:-localhost:${PORT}}
       SWAGGER_BASE_PATH: ${SWAGGER_BASE_PATH:-/api/}
       DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
-      DATABASE_FILE: ${DB_MAIN_CLIENT:-./assets/database.json}
-      JWT_FILE: ${DB_MAIN_CLIENT:-./assets/key.b64.pub}
+      DATABASE_FILE: ${DATABASE_FILE:-./assets/database.json}
+      JWT_FILE: ${JWT_FILE:-./assets/key.b64.pub}
       PORT: ${PORT:-3000}
     volumes:
       - ./data/node:/usr/app/assets
@@ -19,12 +19,12 @@ services:
     networks:
       - db
     depends_on:
-      - mongo
-  mongo:
+      - database
+  database:
     image: mongo:4.0
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: example
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: DockerPassWORD
     ports:
       - "27017:${PORT_MONGO:-27017}"
     volumes:

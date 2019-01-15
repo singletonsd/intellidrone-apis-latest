@@ -60,7 +60,7 @@ fi
 echo -ne "Checking app_tokens file: "
 if [ ! -f "app_tokens.json" ]; then
     echo "not found. Creating a empty one."
-    touch app_tokens.json
+    echo "[]" > app_tokens.json
 else
     echo "already exists."
 fi

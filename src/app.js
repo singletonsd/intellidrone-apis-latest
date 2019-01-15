@@ -12,7 +12,7 @@ var jsyaml = require('js-yaml');
 // swaggerRouter configuration
 var options = {
   controllers: path.join(__dirname, './controllers'),
-  useStubs: process.env.NODE_ENV === 'development' // Conditionally turn on stubs (mock mode)
+  useStubs: false
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)

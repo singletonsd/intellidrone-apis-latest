@@ -19,8 +19,6 @@ WORKDIR /usr/app
 
 COPY src src/
 COPY package.json .
-COPY scripts/keys_generator.sh scripts/
-COPY environment/.docker.env ./.env
 
 # Install app dependencies
 ENV NPM_CONFIG_LOGLEVEL warn
@@ -28,8 +26,12 @@ RUN npm install --production
 
 EXPOSE 3000
 
-# Generate keys
-RUN ./scripts/keys_generator.sh
+COPY scripts/keys_generator.sh scripts/
+COPY environment/.docker.env ./.env
+COPY database.json .
+COPY ecosystem.config.docker.js ./ecosystem.config.js
+# Generate keys and api_tokens file.
+RUN ./scripts/keys_generator.sh && echo "[]" > app_tokens.json
 
 VOLUME /usr/app/assets
 # Show current folder structure in logs

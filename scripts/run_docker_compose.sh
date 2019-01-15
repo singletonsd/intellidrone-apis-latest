@@ -53,12 +53,14 @@ if [ ! -d ${DATA_DIR_DB} ]; then
     mkdir -p ${DATA_DIR_DB}
 fi
 
-if [ "${STAGE}" == "p" ];
+./scripts/init_service.sh ${STAGE}
+
+if [ "${STAGE}" == "p" ]; then
     if [ ! -d ${DATA_DIR_NODE} ]; then
         mkdir -p ${DATA_DIR_NODE}
     fi
-    docker-compose up
-else
     docker-compose -f docker-compose.yml up
+else
+    docker-compose up
 fi
 

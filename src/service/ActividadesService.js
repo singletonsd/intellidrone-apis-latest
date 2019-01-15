@@ -288,7 +288,7 @@ exports.getActividades = async function (skip, limit, orderBy, filter,
   if(fromDate)
     optionsFind.sampleDate.$gte = fromDate;
   if(untilDate)
-    optionsFind.sampleDate.$lte = untilDate
+    optionsFind.sampleDate.$lte = untilDate;
   if(!optionsFind.sampleDate.$gte && !optionsFind.sampleDate.$lte)
     delete optionsFind.sampleDate;
   let actividades;
