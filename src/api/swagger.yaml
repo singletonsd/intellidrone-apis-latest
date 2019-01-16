@@ -610,7 +610,7 @@ paths:
       tags:
       - "Vacas"
       summary: "Get all vacas."
-      description: "Get all vacas."
+      description: "Get all vacas with last 5 actividades."
       operationId: "getVacas"
       consumes:
       - "application/json"
@@ -967,7 +967,7 @@ paths:
       tags:
       - "Vacas"
       summary: "Get one vaca."
-      description: "Get one vaca."
+      description: "Get one vaca with last 5 actividades."
       operationId: "getVacasById"
       consumes:
       - "application/json"

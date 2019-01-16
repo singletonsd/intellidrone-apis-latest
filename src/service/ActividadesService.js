@@ -2,19 +2,20 @@
 
 const streamifier = require('streamifier');
 const es = require('event-stream');
-const moment = require('moment');
 const vacasService = require('./VacasService');
 const vacasModel = require('../database/models/vacas');
 const usersModel = require('../database/models/users');
 const lotesModel = require('../database/models/lotes');
 const actividadesModel = require('../database/models/actividades');
 
+const mongoose = require('../database/main');
+
 const pattern_old = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
 const pattern_new = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, MSG: %{NUMBER:inecesario},%{NUMBER:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo},%{NUMBER:intentosLora} ';
 const node_grok = require('node-grok').loadDefaultSync();
 const parser_old = node_grok.createPattern(pattern_old);
 const parser_new = node_grok.createPattern(pattern_new);
-const populate = {path: 'vaca', select: 'name reference'};
+const populate = { path: 'vaca', select: 'name reference' };
 
 /**
  * Add one Actividad.
@@ -104,7 +105,7 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
         s.pause();
         line_number++;
         let arreglo = parser_old.parseSync(line);
-        if(!arreglo)
+        if (!arreglo)
           arreglo = parser_new.parseSync(line);
         if (arreglo) {
           // let fechaConstruida = moment(arreglo.primerString);
@@ -113,14 +114,14 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
           // fechaConstruida.add(arreglo.segundo,'seconds');
           let res = arreglo.dia.split("");
           let fechaConstruida = new Date();
-          if(res.length === 5){
+          if (res.length === 5) {
             fechaConstruida.setFullYear("20" + res[3] + res[4]);
             fechaConstruida.setMonth(Number("" + res[1] + res[2]) - 1);
             fechaConstruida.setDate(res[0]);
             fechaConstruida.setHours(arreglo.hora);
             fechaConstruida.setMinutes(arreglo.minuto);
             fechaConstruida.setSeconds(arreglo.segundo);
-          }else{
+          } else {
             fechaConstruida.setFullYear("20" + res[4] + res[5]);
             fechaConstruida.setMonth(Number("" + res[2] + res[3]) - 1);
             fechaConstruida.setDate(Number("" + res[0] + res[1]));
@@ -135,12 +136,12 @@ exports.addActividades = async function (upfile, userId, loteId, collectingDate)
             collectingDate: collectingDate,
             insertDate: new Date()
           });
-          if(arreglo.intentosLora)
+          if (arreglo.intentosLora)
             act.connectionsAttempts = arreglo.intentosLora;
           vacaIndex = vacasRef.indexOf(arreglo.id);
           if (vacaIndex === -1) {
-            if(vacasIdAll.indexOf(arreglo.id) !== -1)
-              reject({ message: 'Vaca with reference ' + arreglo.id + ' exists and it belongs to another user or lote.'});
+            if (vacasIdAll.indexOf(arreglo.id) !== -1)
+              reject({ message: 'Vaca with reference ' + arreglo.id + ' exists and it belongs to another user or lote.' });
             let vaquita = new vacasModel({
               location: loteId,
               reference: arreglo.id
@@ -262,42 +263,84 @@ exports.getActividadById = async function (id, userId) {
  * returns List
  **/
 exports.getActividades = async function (skip, limit, orderBy, filter,
-    userId, loteId, vacaId, fromDate, untilDate,vacaReference) {
-  if(limit <= 0)
+  userId, loteId, vacaId, fromDate, untilDate, vacaReference) {
+  if (limit <= 0)
     limit = 10;
   let vacasId;
   let optionsFind = {};
-  if(vacaId)
-    optionsFind.vaca = vacaId;
-  else if(vacaReference){
-    vacaId = await vacasModel.findOne({ reference: vacaReference});
-    if(vacaId)
-      optionsFind.vaca = vacaId.id;
-  }else{
-    if(userId){
-      let vacas;
-      vacas = await vacasService.getVacas(0,1000,null,null,userId,loteId);
-      if(vacas && vacas.length){
-        vacasId = vacas.map((val)=>{ return val.id;});
-      }else
-        return;
-    }
-    optionsFind.vaca = { $in: vacasId };
+  let vacas;
+  if (vacaId) {
+    vacas = await vacasService.getVacasById(vacaId, userId);
+    if (!vacas)
+      throw { message: 'Vaca does not exists with id ' + vacaId };
+    optionsFind._id = mongoose.Types.ObjectId(vacaId);
+  }else if (vacaReference) {
+    vacaId = await vacasModel
+      .findOne({ reference: vacaReference })
+      .select('name reference _id');
+    if (vacaId)
+      optionsFind._id = mongoose.Types.ObjectId(vacaId.id);
+    else
+      throw { message: 'Vaca does not exists with reference ' + vacaReference };
+  } else {
+    vacas = await vacasService.getVacas(0, 10000, null, null, userId, loteId);
+    if (vacas && vacas.length) {
+      vacasId = vacas.map((val) => { return val._id; });
+    } else
+      throw { message: 'There is no vacas for user ' + userId + ' in lote with id ' + loteId };
+    optionsFind._id = { $in: vacasId };
   }
-  optionsFind.sampleDate = {};
-  if(fromDate)
-    optionsFind.sampleDate.$gte = fromDate;
-  if(untilDate)
-    optionsFind.sampleDate.$lte = untilDate;
-  if(!optionsFind.sampleDate.$gte && !optionsFind.sampleDate.$lte)
-    delete optionsFind.sampleDate;
+  optionsFind.actividades = {};
+  optionsFind.actividades.sampleDate = {}
+  if (fromDate)
+    optionsFind.actividades.sampleDate.$gte = fromDate;
+  if (untilDate)
+    optionsFind.actividades.sampleDate.$lte = untilDate;
+  if (!optionsFind.actividades.sampleDate.$gte && !optionsFind.actividades.sampleDate.$lte)
+    delete optionsFind.actividades;
   let actividades;
-  if(orderBy)
+  /*if(orderBy)
     actividades = await actividadesModel.find(optionsFind)
       .populate(populate)
       .skip(skip).limit(limit).sort(orderBy).skip(skip).limit(limit);
   else
     actividades = await actividadesModel.find(optionsFind)
-    .populate(populate).skip(skip).limit(limit);
+    .populate(populate).skip(skip).limit(limit);*/
+  let aggregate = [
+    { $match: optionsFind },
+    {
+      $lookup: {
+        from: "actividades",
+        localField: "_id",
+        foreignField: "vaca",
+        as: "actividades"
+      }
+    }
+    , {
+      $lookup: {
+        from: "lotes",
+        localField: "location",
+        foreignField: "_id",
+        as: "location"
+      }
+    }
+    , { $unwind: "$location" }
+    , {
+      $project: {
+        actividades: {
+          /*          sampleDate: 1,
+                    latitude: 1,
+                    longitude: 1,*/
+          $slice: ["$actividades", skip, limit]
+        },
+        name: 1, sex: 1, reference: 1, months: 1, weight: 1,
+        'location.name': 1, 'location.latitude': 1,
+        'location.longitude': 1, 'location._id': 1
+      }
+    }
+  ];
+  if (orderBy)
+    aggregate.push({ $sort: { orderBy: 1 } });
+  actividades = await vacasModel.aggregate(aggregate);
   return actividades;
 }
