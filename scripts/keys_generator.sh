@@ -24,9 +24,17 @@ fi
 
 function usage(){
     echo "Usage"
+    echo "1 - main folder. (optional). Defailt PWD."
 }
+MAIN_FOLDER=${__root}
+if [ $# -ge 1 ]; then
+    MAIN_FOLDER=${1}
+    if [ "${MAIN_FOLDER-1}" != "/" ];then
+        MAIN_FOLDER="${MAIN_FOLDER}/"
+    fi
+fi
 
-KEYS_FOLDER="${__root}/keys"
+KEYS_FOLDER="${MAIN_FOLDER}/keys"
 PASSWORD_FILE=${KEYS_FOLDER}/password
 PUBLIC_FILE=${KEYS_FOLDER}/key
 if [ ! -d ${KEYS_FOLDER} ]; then
