@@ -3,19 +3,20 @@ version: "3.3"
 services:
   api:
     environment:
-      SWAGGER_HOST: localhost:${PORT:-8080}
+      SWAGGER_HOST: localhost:${PORT:-3000}
       SWAGGER_BASE_PATH: /
-      DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
+      DB_MAIN_CLIENT: docker
       DATABASE_FILE: ./database.json
       JWT_FILE: ./keys/key.b64.pub
+      APP_TOKENS_FILE: ./app_tokens.json
     volumes:
       - ./src:/usr/app/src
     command:
       - /usr/local/bin/node
       - src/server.js
       - "-r dotenv/config"
-      # - "--inspect-brk=0.0.0.0"
-      # - "."
+      - "--inspect-brk=0.0.0.0"
+      - "."
     ports:
       - "3000:${PORT:-3000}"
       - "9229:9229"

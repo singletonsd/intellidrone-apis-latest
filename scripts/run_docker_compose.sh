@@ -61,6 +61,6 @@ if [ "${STAGE}" == "p" ]; then
     fi
     docker-compose -f docker-compose.yml up
 else
-    docker-compose up
+    docker-compose up --force-recreate
 fi
 

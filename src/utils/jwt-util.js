@@ -1,18 +1,21 @@
 require('dotenv').config();
 
-var fs = require('fs');
-var file = process.env.JWT_FILE;
+const fs = require('fs');
+let file_jwt = process.env.JWT_FILE;
 
 const _ = require('lodash');
 const writer = require("./writer");
-var jwt = require("express-jwt");
+const jwt = require("express-jwt");
 const pathToRegexp = require('path-to-regexp');
-if(!file)
-  file = './keys/key.b64.pub';
-var publicKey = fs.readFileSync(file).toString();
+if(!file_jwt)
+  file_jwt = './keys/key.b64.pub';
+const publicKey = fs.readFileSync(file_jwt).toString();
 module.exports.publicKey = publicKey;
 
-const APP_TOKENS = JSON.parse(fs.readFileSync('./app_tokens.json', 'utf8'));
+const file_app_tokens = process.env.APP_TOKENS_FILE;
+if(!file_app_tokens)
+  file_app_tokens = './app_tokens.json';
+const APP_TOKENS = JSON.parse(fs.readFileSync(file_app_tokens, 'utf8'));
 
 module.exports.addJWT = function(app,SWAGGER_BASE_PATH){
   const PUBLIC_URLs = [
