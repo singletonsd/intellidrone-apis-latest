@@ -30,7 +30,7 @@ if [ $# -lt 1 ]; then
     echo -e "$(usage)"
     exit 1;
 else
-    if [ "${1}" != "d" ] && [ "${1}" == "p" ]; then
+    if [ "${1}" != "d" ] && [ "${1}" != "p" ]; then
         echo -e "Illegal number of parameters"
         echo -e "$(usage)"
         exit 1;
