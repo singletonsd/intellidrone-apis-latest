@@ -12,7 +12,7 @@ if(!file_jwt)
 const publicKey = fs.readFileSync(file_jwt).toString();
 module.exports.publicKey = publicKey;
 
-const file_app_tokens = process.env.APP_TOKENS_FILE;
+let file_app_tokens = process.env.APP_TOKENS_FILE;
 if(!file_app_tokens)
   file_app_tokens = './app_tokens.json';
 const APP_TOKENS = JSON.parse(fs.readFileSync(file_app_tokens, 'utf8'));
