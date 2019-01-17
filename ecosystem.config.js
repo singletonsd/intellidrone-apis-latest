@@ -28,7 +28,7 @@ module.exports = {
       host : '66.97.36.28',
       port: "5822",
       ref  : 'origin/master',
-      repo : 'https://gitlab+deploy-token-35600:2nG-heAbGzEPMYBpxHhM@gitlab.com/intelliDrone/api_new.git',
+      repo : 'git@gitlab.com:intelliDrone/api_new.git',
       path : '/root/NodeApps/api-new-production',
       ssh_options : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
       'post-deploy' : './scripts/init_service.sh d && npm install && pm2 reload ecosystem.config.js --env production'
@@ -39,7 +39,7 @@ module.exports = {
       host : '66.97.36.28',
       port: "5822",
       ref  : 'origin/develop',
-      repo : 'https://gitlab+deploy-token-35600:2nG-heAbGzEPMYBpxHhM@gitlab.com/intelliDrone/api_new.git',
+      repo : 'git@gitlab.com:intelliDrone/api_new.git',
       path : '/root/NodeApps/api-new-develop',
       ssh_options : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
       'post-deploy' : './scripts/init_service.sh p && npm install && pm2 reload ecosystem.config.js --env development'
