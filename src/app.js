@@ -37,7 +37,8 @@ require("./utils/jwt-util").addJWT(app,SWAGGER_BASE_PATH);
 
 //Connect to mongodb
 const mongoose = require('./database/main');
-if(process.env.DATABASE_LOCAL){
+console.log(process.env.DATABASE_LOCAL);
+if(process.env.DATABASE_LOCAL && process.env.DATABASE_LOCAL === "1"){
   console.log("Running with local database.");
   var shell = require('shelljs');
   shell.exec('./scripts/run_mongo_local.sh');

@@ -31,7 +31,7 @@ module.exports = {
       repo : 'git@gitlab.com:intelliDrone/api_new.git',
       path : '/root/NodeApps/api-new-production',
       ssh_options : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
-      'post-deploy' : './scripts/init_service.sh d && npm install && pm2 reload ecosystem.config.js --env production'
+      'post-deploy' : './scripts/init_service.sh p && npm install && pm2 reload ecosystem.config.js --env production'
     },
     development : {
       key  : '~/.ssh/robotagro',
@@ -42,7 +42,7 @@ module.exports = {
       repo : 'git@gitlab.com:intelliDrone/api_new.git',
       path : '/root/NodeApps/api-new-develop',
       ssh_options : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
-      'post-deploy' : './scripts/init_service.sh p && npm install && pm2 reload ecosystem.config.js --env development'
+      'post-deploy' : './scripts/init_service.sh d && npm install && pm2 reload ecosystem.config.js --env development'
     }
   }
 };
