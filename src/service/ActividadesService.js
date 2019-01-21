@@ -8,14 +8,13 @@ const usersModel = require('../database/models/users');
 const lotesModel = require('../database/models/lotes');
 const actividadesModel = require('../database/models/actividades');
 
-const mongoose = require('../database/main');
-
 const pattern_old = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, COUNT:%{NUMBER:numero_mensaje},  MSG:%{SPACE:inecesario}%{INT:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo}';
 const pattern_new = '%{NOTSPACE:primerString} %{NOTSPACE:segundo} \\-- ID: %{WORD:id}, MSG: %{NUMBER:inecesario},%{NUMBER:tiempo_adq_satelite},%{NUMBER:latitud},%{NUMBER:longitud},%{NUMBER:dia},%{NUMBER:hora},%{NUMBER:minuto},%{NUMBER:segundo},%{NUMBER:intentosLora} ';
 const node_grok = require('node-grok').loadDefaultSync();
 const parser_old = node_grok.createPattern(pattern_old);
 const parser_new = node_grok.createPattern(pattern_new);
-const populate = { path: 'vaca', select: 'name reference' };
+
+const _ = require('lodash');
 
 /**
  * Add one Actividad.
@@ -266,81 +265,46 @@ exports.getActividades = async function (skip, limit, orderBy, filter,
   userId, loteId, vacaId, fromDate, untilDate, vacaReference) {
   if (limit <= 0)
     limit = 10;
-  let vacasId;
   let optionsFind = {};
-  let vacas;
+  let vacas = [];
   if (vacaId) {
-    vacas = await vacasService.getVacasById(vacaId, userId);
-    if (!vacas)
+    let vaca = await vacasService.getVacasById(vacaId, userId);
+    if (!vaca)
       throw { message: 'Vaca does not exists with id ' + vacaId };
-    optionsFind._id = mongoose.Types.ObjectId(vacaId);
-  }else if (vacaReference) {
-    vacaId = await vacasModel
+    vacas.push(vaca);
+  } else if (vacaReference) {
+    let vaca = await vacasModel
       .findOne({ reference: vacaReference })
       .select('name reference _id');
-    if (vacaId)
-      optionsFind._id = mongoose.Types.ObjectId(vacaId.id);
-    else
+    if (!vaca)
       throw { message: 'Vaca does not exists with reference ' + vacaReference };
+    vacas.push(vaca);
   } else {
     vacas = await vacasService.getVacas(0, 10000, null, null, userId, loteId);
-    if (vacas && vacas.length) {
-      vacasId = vacas.map((val) => { return val._id; });
-    } else
+    if (!vacas || !vacas.length)
       throw { message: 'There is no vacas for user ' + userId + ' in lote with id ' + loteId };
-    optionsFind._id = { $in: vacasId };
   }
-  optionsFind.actividades = {};
-  optionsFind.actividades.sampleDate = {}
-  if (fromDate)
-    optionsFind.actividades.sampleDate.$gte = fromDate;
-  if (untilDate)
-    optionsFind.actividades.sampleDate.$lte = untilDate;
-  if (!optionsFind.actividades.sampleDate.$gte && !optionsFind.actividades.sampleDate.$lte)
-    delete optionsFind.actividades;
-  let actividades;
-  /*if(orderBy)
-    actividades = await actividadesModel.find(optionsFind)
-      .populate(populate)
-      .skip(skip).limit(limit).sort(orderBy).skip(skip).limit(limit);
-  else
-    actividades = await actividadesModel.find(optionsFind)
-    .populate(populate).skip(skip).limit(limit);*/
-  let aggregate = [
-    { $match: optionsFind },
-    {
-      $lookup: {
-        from: "actividades",
-        localField: "_id",
-        foreignField: "vaca",
-        as: "actividades"
-      }
+  if (fromDate || untilDate) {
+    optionsFind.sampleDate = {};
+    if (fromDate) {
+      optionsFind.sampleDate.$gte = fromDate;
     }
-    , {
-      $lookup: {
-        from: "lotes",
-        localField: "location",
-        foreignField: "_id",
-        as: "location"
-      }
+    if (untilDate) {
+      optionsFind.sampleDate.$lte = untilDate;
     }
-    , { $unwind: "$location" }
-    , {
-      $project: {
-        actividades: {
-          /*          sampleDate: 1,
-                    latitude: 1,
-                    longitude: 1,*/
-          $slice: ["$actividades", skip, limit]
-        },
-        name: 1, sex: 1, reference: 1, months: 1, weight: 1,
-        'location.name': 1, 'location.latitude': 1,
-        'location.longitude': 1, 'location._id': 1
-      }
-    }
-  ];
-  if (orderBy)
-    aggregate.push({ $sort: { orderBy: 1 } });
-  actividades = await vacasModel.aggregate(aggregate);
-  return actividades;
+  }
+  let actividadesPromises = [];
+  _.forEach(vacas, (value) => {
+    optionsFind.vaca = value._id;
+    actividadesPromises.push(
+      actividadesModel.find(optionsFind)
+        .select("_id sampleDate latitude longitude")
+        .skip(skip).limit(limit)
+    );
+  });
+  let actividades = await Promise.all(actividadesPromises);
+  for (let i = 0; i < actividades.length; i++) {
+    vacas[i].actividades = actividades[i];
+  }
+  return vacas;
 }

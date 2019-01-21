@@ -24,14 +24,17 @@ COPY package.json .
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN npm install --production
 
+RUN npm install -g nodemon
+
 EXPOSE 3000
 
+COPY scripts/init_service.sh scripts/
 COPY scripts/keys_generator.sh scripts/
 COPY environment/.docker.env ./.env
 COPY database.json .
 COPY ecosystem.config.docker.js ./ecosystem.config.js
 # Generate keys and api_tokens file.
-RUN ./scripts/keys_generator.sh && echo "[]" > app_tokens.json
+RUN ./scripts/init_service.sh p
 
 VOLUME /usr/app/assets
 # Show current folder structure in logs

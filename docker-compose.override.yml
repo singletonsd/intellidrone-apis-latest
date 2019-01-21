@@ -12,7 +12,7 @@ services:
     volumes:
       - ./src:/usr/app/src
     command:
-      - /usr/local/bin/node
+      - /usr/local/bin/nodemon
       - "--inspect-brk=0.0.0.0:9229"
       - src/server.js
       - "-r dotenv/config"
