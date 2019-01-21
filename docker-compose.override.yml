@@ -13,9 +13,9 @@ services:
       - ./src:/usr/app/src
     command:
       - /usr/local/bin/nodemon
-      - "--inspect-brk=0.0.0.0:9229"
+      - "--inspect-brk=0.0.0.0:${PORT_APP_DEBUG:-9229}"
       - src/server.js
       - "-r dotenv/config"
     ports:
       - "3000:${PORT:-3000}"
-      - "9229:9229"
+      - "9229:${PORT_APP_DEBUG:-9229}"

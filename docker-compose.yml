@@ -11,12 +11,12 @@ services:
       DB_MAIN_CLIENT: ${DB_MAIN_CLIENT:-docker}
       DATABASE_FILE: ${DATABASE_FILE:-./assets/database.json}
       JWT_FILE: ${JWT_FILE:-./assets/key.b64.pub}
-      APP_TOKENS_FILE: ${APP_TOKENS_FILE:-./app_tokens.json}
+      APP_TOKENS_FILE: ${APP_TOKENS_FILE:-./assets/app_tokens.json}
       PORT: ${PORT:-3000}
     volumes:
       - ./data/node:/usr/app/assets
     ports:
-      - "3000:${PORT:-3000}"
+      - "3000:${PORT_APP:-3000}"
     networks:
       - db
     depends_on:
@@ -27,9 +27,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 'DockerPassWORD'
     ports:
-      - "27017:${PORT_MONGO:-27017}"
+      - "27017:${PORT_DB:-27017}"
     volumes:
-      - ./data/db:/data/db
+      - ./data/db:${DATA_DB:-/data/db}
     networks:
       - db
 

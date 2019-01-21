@@ -11,8 +11,24 @@
 
 ----------------------
 
-* **MASTER BRANCH:** it creates a docker image with node with the tag intellidrone/api:latest and it applies node server in [webagro production server](http://web.robotagro.com/api).
-* **DEVELOP BRANCH:** it creates a docker image with node with the tag intellidrone/api:develop and it applies node server in [webagro development server](http://web.robotagro.com/api-develop).
+* **MASTER BRANCH:** it creates a docker image with node with the tag intellidrone/api:latest and it applies node server in [webagro production server](http://web.robotagro.com/api/latest).
+* **DEVELOP BRANCH:** it creates a docker image with node with the tag intellidrone/api:develop and it applies node server in [webagro development server](http://web.robotagro.com/api/development).
+
+## PREPARE ASSETS
+
+----------------------
+
+There is a script called **init.service** which creates everything to start the api.
+The parameters are:
+
+* Stage (**d**evelopment or **p**roduction).
+* Folder. It is where the assets are going to be created. The path is from the script folder.
+
+To use it just run it as following:
+
+```bash
+./scripts/init_service.sh d deploy/qa
+```
 
 ## UPLOAD TO PRODUCTION
 
@@ -38,6 +54,36 @@ The image name is: **intellidrone/api**. Available TAGs:
 
 * **latest:** from master branch.
 * **develop:** from develop branch.
+
+## DOCKER COMPOSE
+
+----------------------
+
+To use the api as a containerized service there is also a script called **run_docker_compose.sh**.
+There is only one parameter:
+
+* Stage (**d**evelopment or **p**roduction).
+
+To use it just run it as following:
+
+```bash
+./scripts/init_service.sh d
+```
+
+The image has the following environments. You can overwrite them by adding an .env file:
+
+* PORT_APP: default 3000.
+* PORT_DB: default 27017.
+* PORT_APP_DEBUG: default 9229.
+* SWAGGER_HOST: url where the service will be available. Default localhost:${PORT}
+* SWAGGER_BASE_PATH: path inside host. Default /api/
+* DB_MAIN_CLIENT: db configuration for the main (and unique) db. Default docker
+* DATABASE_FILE: where database credentials are stored. Default ./assets/database.json
+* JWT_FILE: file with a key to encrypt password and tokens. Default ./assets/key.b64.pub
+* APP_TOKENS_FILE: where app tokens are stored. Default ./app_tokens.json
+* DATA_DB: where data is saved. Default ./data/db
+
+If the development stage is selected, the app will be attach to a debugger listening on port 9229 and the source code in the host will be the same as in the container.
 
 ## API TOKENS
 
