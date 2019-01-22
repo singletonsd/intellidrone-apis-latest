@@ -29,7 +29,7 @@ services:
     ports:
       - "27017:${PORT_DB:-27017}"
     volumes:
-      - ${DATA_DB:-/data/db}: ./data/db
+      - ${DATA_DB:-/data/db}:/data/db
     networks:
       - db
 

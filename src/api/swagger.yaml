@@ -978,7 +978,7 @@ paths:
       parameters:
       - name: "id"
         in: "path"
-        description: "id to delete"
+        description: "id of vaca"
         required: true
         type: "string"
       - name: "userId"
