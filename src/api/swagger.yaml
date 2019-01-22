@@ -2763,7 +2763,7 @@ definitions:
     example:
       name: "Mirta"
       reference: "0xFF23"
-      weigth: 350
+      weight: 350
       months: 30
       sex: "Hembra"
       location:
@@ -2853,7 +2853,7 @@ definitions:
           $ref: "#/definitions/Linea"
     example:
       nuevas_vacas:
-      - weigth: 1.4658129
+      - weight: 1.4658129
         months: 6.02745618307040320615897144307382404804229736328125
         name: "name"
         actividades:
@@ -2863,7 +2863,7 @@ definitions:
         - date: "2000-01-23T04:56:07.000+00:00"
           latitude: 5.962134
           longitude: 5.637377
-      - weigth: 1.4658129
+      - weight: 1.4658129
         months: 6.02745618307040320615897144307382404804229736328125
         name: "name"
         location:
