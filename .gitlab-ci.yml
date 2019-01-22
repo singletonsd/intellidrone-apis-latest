@@ -3,7 +3,7 @@ image: node:8-alpine
 .login_gitlab_registry: &login  # This is an anchor
     docker login registry.gitlab.com -u ${GITLAB_REGISTRY_USER} -p ${GITLAB_REGISTRY_PASS}
 .install_dependencies: &install_dependencies
-    apk add --no-cache bash curl gawk sed util-linux pciutils usbutils coreutils binutils findutils grep
+    apk add --no-cache bash curl gawk git sed util-linux pciutils usbutils coreutils binutils findutils grep
 .generate_env_file: &generate_env_file
     cp environment/.prod.env .env
 .build_push_gitlab: &build_push
@@ -25,8 +25,7 @@ build:
   before_script:
     - apk add --no-cache python make gcc g++
   script:
-    #- npm install
-    - *generate_env_file
+    - npm install
 
 test:
   services:
@@ -129,7 +128,7 @@ deploy-image-master:
     - build
   before_script:
     - *login  # This is a reference to the anchor.
-    - apk add --update bash git
+    - *install_dependencies
   script:
     *build_push # This is a reference to the anchor.
   when: on_success
@@ -148,7 +147,7 @@ deploy-image-tag:
     - build
   before_script:
     - *login  # This is a reference to the anchor.
-    - apk add --update bash
+    - *install_dependencies
   script:
     *build_push # This is a reference to the anchor.
   when: on_success
