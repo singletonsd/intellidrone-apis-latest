@@ -37,7 +37,7 @@
     "event-stream": "4.0.1",
     "express-jwt": "5.3.1",
     "js-yaml": "3.3.0",
-    "lodash": "4.17.11",
+    "lodash": "4.17.19",
     "mongoose": "5.4.2",
     "node-grok": "2.0.3",
     "normalize-port": "1.0.0",
