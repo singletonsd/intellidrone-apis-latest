@@ -28,7 +28,7 @@
   },
   "private": true,
   "dependencies": {
-    "bcrypt": "3.0.3",
+    "bcrypt": "5.0.0",
     "bookshelf": "0.14.2",
     "bookshelf-modelbase": "2.10.4",
     "connect": "3.6.6",
