@@ -42,7 +42,7 @@
     "node-grok": "2.0.3",
     "normalize-port": "1.0.0",
     "path-to-regexp": "2.4.0",
-    "shelljs": "0.8.3",
+    "shelljs": "0.8.5",
     "streamifier": "0.1.1",
     "swagger-tools": "0.10.4"
   }
