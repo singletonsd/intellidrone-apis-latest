@@ -38,7 +38,7 @@
     "express-jwt": "5.3.1",
     "js-yaml": "3.3.0",
     "lodash": "4.17.11",
-    "mongoose": "5.4.2",
+    "mongoose": "5.7.5",
     "node-grok": "2.0.3",
     "normalize-port": "1.0.0",
     "path-to-regexp": "2.4.0",
